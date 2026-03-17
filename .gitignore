@@ -8,3 +8,11 @@
 *.swo
 .DS_Store
 
+# Local Codex runtime state
+.codex/
+
+# Child application repositories live here locally but are versioned independently
+aadhaar-chain/
+ondc-buyer/
+ondc-seller/
+flatwatch/

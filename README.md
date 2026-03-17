@@ -20,6 +20,8 @@ The application repositories remain independent and are not mirrored here:
 - `ondc-seller`
 - `flatwatch`
 
+When this repository is used at the `CodexWorkspace` root, those child repos exist locally and are intentionally gitignored here so the umbrella repo only tracks governance artifacts.
+
 This repo exists to keep the multi-project governance layer legible, versioned, and reviewable without coupling it to any one child project.
 
 ## Source Layout
