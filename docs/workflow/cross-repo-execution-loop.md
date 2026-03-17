@@ -38,6 +38,7 @@ Use this stricter loop when the agent is expected to operate with high autonomy.
 - Avoid stacked branches by default.
 - If stacked branches are temporarily required, split them back to branches based on `main` before review unless stacked review is explicitly desired.
 - Do not mix unrelated fixes into the active branch unless they block the current issue.
+- Detailed branching, worktree, merge, and verification-gate policy lives in `docs/workflow/git-governance-control-plane.md`.
 
 ## Validation Order
 
@@ -56,6 +57,7 @@ Do not recommend merge until all of the following are true:
 - known limitations are explicitly documented
 - any required Notion memory has been updated
 - browser testing has been completed for UI-critical work
+- the branch satisfies the git control-plane requirements in `docs/workflow/git-governance-control-plane.md`
 
 ## Write Destinations
 

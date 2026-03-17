@@ -22,7 +22,9 @@ Use this workflow before major feature, enhancement, architecture, or governance
 Companion workflows:
 
 - `docs/workflow/cross-repo-execution-loop.md`
+- `docs/workflow/git-governance-control-plane.md`
 - `docs/workflow/research-validation-loop.md`
+- `docs/operations/portfolio-bootstrap-baseline.md`
 
 ## Pushback Requirement
 
