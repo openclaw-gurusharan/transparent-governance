@@ -30,9 +30,12 @@ Canonical instruction source for Codex in this workspace.
 BEFORE editing root AGENTS.md or workspace governance docs -> read rules/docs-pruning-loop.md
 BEFORE making high-level product or trust decisions -> read docs/reference/MISSION.md
 BEFORE changing cross-repo architecture, trust model, or portfolio boundaries -> read docs/reference/WORKSPACE-SCOPE.md and rules/decision-preflight.md
+BEFORE changing the shared trust API or how portfolio apps consume trust state -> read docs/reference/TRUST-CONSUMER-CONTRACT.md
 BEFORE deciding where a change belongs -> read docs/operations/workflow-setup-responsibility-map.md
 BEFORE starting new governance, feature, or enhancement planning -> read docs/workflow/portfolio-governance.md
 BEFORE running multi-repo execution work -> read docs/workflow/cross-repo-execution-loop.md
+BEFORE changing branching, worktree, merge, or verification-gate policy -> read docs/workflow/git-governance-control-plane.md
+BEFORE browser testing, wallet-flow validation, or live DOM inspection -> read docs/workflow/browser-testing-control-plane.md
 BEFORE changing issue tracking expectations -> read docs/workflow/linear-issue-control-plane.md
 BEFORE changing durable memory / ADR / research capture rules -> read docs/workflow/notion-memory-control-plane.md
 BEFORE changing Notion memory structure or retrieval rules -> read docs/workflow/notion-agent-memory-schema.md

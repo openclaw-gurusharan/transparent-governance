@@ -27,6 +27,39 @@ Use the lightest tool that can validate the real behavior:
 
 Do not default to a fresh automation browser for wallet flows, extension signing, or authenticated journeys that depend on the user's installed browser state.
 
+## Workspace Browser Standard
+
+For this workspace, the default browser-testing target is the existing Chrome Beta debug session exposed on `127.0.0.1:9222` and backed by:
+
+- profile: `~/.codex/chrome-beta-debug-profile`
+- browser: `Google Chrome Beta`
+- mode: live CDP reuse, not fresh browser launch
+
+This is the workspace-standard browser for web testing because it contains the user's real extensions, wallet state, cookies, and settings. Treat this profile as the default for all browser testing in this workspace unless the user explicitly asks for a different browser context.
+
+Operational rules:
+
+1. if `curl -s http://127.0.0.1:9222/json/version` succeeds, reuse that session
+2. do not launch a new Chrome, Chromium, or automation browser while that session is available
+3. do not create a separate browser session for testing just because a tool can do so
+4. prefer the user's already-open designated tab in that attached session
+5. only open a new tab inside the existing attached session when the user explicitly approves it or no designated tab exists and the task cannot proceed otherwise
+6. if the `9222` endpoint is unavailable, stop and ask before launching or replacing the debug session
+
+This is stricter than the generic live-attach guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent drifts into a clean browser.
+
+## User-Managed Session Contract
+
+For workflows that depend on login state, wallet state, or installed extensions:
+
+1. prefer the user's already-open logged-in tab in the workspace-standard Chrome Beta profile
+2. if that tab already exists, do not navigate a different live tab instead
+3. if the required tab does not exist yet, ask the user to open the app in that profile and complete login or wallet setup before continuing
+4. if the browser is open but the wrong profile is attached, stop and ask the user to relaunch the correct profile rather than continuing in the wrong context
+5. do not treat a blank or automation-created page as an acceptable substitute for the user-managed tab when the flow depends on existing browser state
+
+The default posture for authenticated or wallet-backed testing is: attach to the real profile, find the real tab, and use that exact tab. If the tab is missing, ask the user to create it first.
+
 ## Preflight Checklist
 
 Before any browser action, answer these questions explicitly:
@@ -41,6 +74,17 @@ Before any browser action, answer these questions explicitly:
 
 If any answer is unknown, stop and resolve it before opening automation tabs or drawing conclusions from the browser run.
 
+## UI Completion Gate
+
+For UI-critical or interaction-critical changes:
+
+- do not report the work as complete after lint, build, or unit tests alone
+- treat browser validation as a required gate when the user-visible outcome depends on layout, responsive behavior, runtime interaction, wallet state, or authenticated browser state
+- if browser validation is blocked by tooling or session setup, report the work as blocked on browser validation rather than complete
+- only claim completion before a browser pass when the governing repo policy explicitly says browser validation is unnecessary for that surface
+
+This rule exists to prevent "implemented" from being reported when the visual or interactive outcome is still unverified.
+
 ## Live Browser Attach Policy
 
 For wallet or authenticated flows, prefer the user's existing browser context over a new automation browser.
@@ -54,6 +98,42 @@ Required flow:
 5. use the tab the user designates; do not create or repurpose tabs unless explicitly requested
 6. pause at wallet-signing or approval prompts so the user can complete the human-controlled action
 7. resume inspection only after the user signals that approval is complete
+
+Execution recipe for this workspace:
+
+1. verify `127.0.0.1:9222` is live
+2. confirm the process is `Google Chrome Beta` using `~/.codex/chrome-beta-debug-profile`
+3. inspect the live targets from `http://127.0.0.1:9222/json/list`
+4. identify the already-open AadhaarChain or target-app tab the user intends to use
+5. if no logged-in target tab exists, ask the user to open it and log in before proceeding
+6. attach to that exact tab over CDP
+7. only then begin DOM inspection, network inspection, or interaction
+
+Do not skip from "debug endpoint is live" straight to browser actions. The tab-selection step is mandatory.
+
+Hard rule for this workspace:
+
+- when the Chrome Beta debug session on `127.0.0.1:9222` is live, agents must attach to and reuse it
+- agents must not create a separate Chrome session for testing while that session is healthy
+- agents must not treat "new browser tab" as the default first action; the default first action is attach, inspect existing tabs, and select the user-designated one
+- agents must not proceed with authenticated or wallet-backed testing unless the target logged-in tab is already open or the user has explicitly been asked to open and log in to it first
+- agents must not rely on a blank automation page when the real workflow requires the user's configured profile state
+
+## Missing Session Handoff
+
+If the workspace-standard Chrome Beta debug session cannot be found, the agent should hand the restart or launch command to the user instead of silently launching a fresh browser on its own.
+
+Default handoff command:
+
+```bash
+if ! curl -sf http://127.0.0.1:9222/json/version >/dev/null; then
+  open -na "Google Chrome Beta" --args \
+    --remote-debugging-port=9222 \
+    --user-data-dir="$HOME/.codex/chrome-beta-debug-profile"
+fi
+```
+
+Use the force-restart variant only when the existing session is stale, bound to the wrong profile, or explicitly approved for replacement.
 
 ## Chrome Constraint
 
@@ -90,6 +170,7 @@ Reusable launcher and endpoint checks live in:
 - inspect the post-sign state in the same tab the user approved from
 - if the browser profile contains a different wallet than the app expects, fix the adapter mismatch before spending more time on browser debugging
 - prefer the user's designated tab; do not navigate another live tab on the user's behalf once a test tab has been nominated
+- when the Chrome Beta debug session is already open, never replace it with a fresh browser just to simplify automation
 
 ## Evidence Capture
 
@@ -115,6 +196,12 @@ If browser testing fails because of tooling rather than product behavior:
 - do not report product conclusions from an invalid browser environment
 - update the control-plane docs or reusable scripts if the failure exposed a recurring setup gap
 
+Examples of tooling-path failure that must be fixed before product conclusions:
+
+- the browser tool is attached to a blank automation context instead of the live Chrome Beta debug-profile tab
+- the `9222` endpoint is live but the expected logged-in app tab is missing
+- the browser is open under the wrong profile and therefore missing required extensions or wallet state
+
 If the flow depends on browser state that is unavailable in automation:
 
 - switch to live-browser attach
@@ -138,3 +225,5 @@ This workflow was tightened after friction from a live wallet-testing session. T
 - prefer direct browser-binary launch over `open -a` when a debuggable Chrome copy is required
 - require a designated user tab before attach-driven testing begins
 - treat browser-tooling failure as its own class of blocker and fix it before resuming product validation
+- if `127.0.0.1:9222` is already live, reuse that Chrome Beta debug session and never spin up a separate Chrome session for testing
+- if the `9222` session is missing and the user has not asked the agent to replace it, give the user the launch command rather than opening a different browser session
