@@ -101,6 +101,8 @@ Hard gate:
 - do not start implementation on `main` and plan to move it later
 - if the current checkout is `main` and the task is not a true emergency hotfix, create or switch to the correct `codex/` branch first
 - if the current checkout is dirty and the right branch is unclear, stop and resolve the checkout strategy before touching code
+- if local `main` is ahead of `origin/main`, stop treating it as a working branch; preserve the state on a `codex/` branch immediately and continue through a PR path
+- if `.git/sequencer`, `CHERRY_PICK_HEAD`, `MERGE_HEAD`, or equivalent git-operation state is present, do not keep working in that checkout; either resolve the operation intentionally or move the new task to a clean worktree
 
 Decision rules:
 
@@ -172,6 +174,13 @@ Required conditions:
 - the repository protection model allows the merge path being used
 
 If the repo requires a PR, Codex should push the branch, update the issue with the branch and verification evidence, and complete the merge through the allowed review path. If protections permit direct fast-forward or squash merge from the CLI, Codex may complete that merge once the gates are satisfied.
+
+Protected-branch recovery rules:
+
+- do not attempt to push local-only work on protected `main` directly
+- if a direct push is rejected because `main` contains local commits, branch from that exact state, push the branch, and continue with a PR
+- when branch protection requires conversation resolution, check unresolved review threads before attempting merge
+- when PR checks show repeated historical entries, evaluate the newest run for the current head SHA instead of assuming the full rollup is the active gate state
 
 ## Verification Gates
 
