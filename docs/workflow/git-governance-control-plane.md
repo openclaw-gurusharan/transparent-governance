@@ -72,6 +72,7 @@ Rules:
 - branch from the latest `origin/main`
 - one branch per coherent issue-sized change
 - one active Linear issue should map to one active review branch unless the issue explicitly needs multiple review branches
+- branch is the default review unit; worktree is only a local isolation tool when the same repo needs parallel active work
 - avoid stacked branches by default
 - if stacking is temporarily required, unstack before review unless stacked review is explicitly desired
 - do not mix unrelated fixes into the branch unless they are true blockers
@@ -110,6 +111,13 @@ Decision rules:
 - create a new branch when the repo checkout is clean and there is no conflicting in-progress work
 - create a new worktree when another branch in the same repo is active, the current checkout is dirty, or parallel work must proceed without disturbing the active checkout
 - stop and surface a blocker when another in-progress branch overlaps the same problem or files and the correct path is ambiguous
+
+Clear direction:
+
+- use a branch for normal feature, fix, docs, CI, and governance work
+- use a worktree only when one repo needs two active local branches at the same time
+- do not reach for a worktree for cross-repo coordination; use one repo-scoped branch per affected repo instead
+- do not use local `main` as a staging area that will be sorted out later
 
 Codex should not ask for permission for these normal control-plane actions. Branch creation, worktree creation, verification, issue sync, and merge execution are part of the autonomous operating model.
 
@@ -160,6 +168,33 @@ Rules:
 Default merge result on `main`:
 
 - one squashed commit per branch
+
+## Publication Protocol
+
+Branch creation is not sufficient. The durable handoff unit is:
+
+- pushed branch
+- open PR
+- recorded head SHA
+
+Required protocol:
+
+- after the first meaningful checkpoint commit on a non-`main` branch, push with upstream and open a draft PR
+- record the repo, branch, PR URL, and head SHA in the parent work item before moving attention elsewhere
+- do not leave material changes only on a local branch or local `main`
+- do not end a session with any affected repo in a local-only state
+
+Hard gates:
+
+- local `main` must never be ahead of `origin/main`
+- a branch whose end-state still differs from `origin/main` must have an upstream remote branch
+- a branch whose end-state still differs from `origin/main` must have an open PR unless it has already been merged
+- current worktrees must be clean before claiming handoff complete
+
+Session-end enforcement:
+
+- run `./scripts/workflow/repo-publication-sweep.sh` before closing a multi-repo or git-heavy session
+- treat any failing result from that sweep as a blocker, not a reminder
 
 ## Merge Autonomy
 
