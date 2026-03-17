@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  governance-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shell script syntax
+        run: |
+          shell_count="$(find scripts -type f -name '*.sh' | wc -l | tr -d ' ')"
+          if [ "$shell_count" = "0" ]; then
+            echo "No shell scripts found"
+            exit 0
+          fi
+
+          find scripts -type f -name '*.sh' | sort | while IFS= read -r script; do
+            bash -n "$script"
+          done
+
+      - name: Validate AGENTS doc references
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          root = Path(".").resolve()
+          agents = root / "AGENTS.md"
+          missing = []
+
+          for line in agents.read_text().splitlines():
+            marker = "-> read "
+            if marker not in line:
+              continue
+            target = line.split(marker, 1)[1].strip()
+            for part in [segment.strip() for segment in target.split(" and ")]:
+              if not part:
+                continue
+              normalized = part.removeprefix("the relevant ").removesuffix(" file").strip()
+              if "*" in normalized:
+                if not list(root.glob(normalized)):
+                  missing.append(part)
+                continue
+              candidate = root / normalized
+              if not candidate.exists():
+                missing.append(part)
+
+          if missing:
+            raise SystemExit("Missing AGENTS references: " + ", ".join(missing))
+          PY
