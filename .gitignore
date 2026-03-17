@@ -1,0 +1,10 @@
+# Local secrets
+.env
+.env.local
+.env.*.local
+
+# Editor state
+*.swp
+*.swo
+.DS_Store
+
