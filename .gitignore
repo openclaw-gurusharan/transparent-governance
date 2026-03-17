@@ -10,9 +10,12 @@
 
 # Local Codex runtime state
 .codex/
+.worktrees/
 
 # Child application repositories live here locally but are versioned independently
 aadhaar-chain/
 ondc-buyer/
 ondc-seller/
 flatwatch/
+
+shared/portfolio-ui/node_modules/
