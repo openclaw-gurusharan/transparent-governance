@@ -2,6 +2,10 @@
 
 Use this workflow when browser validation matters for runtime state, authenticated flows, wallet extensions, or end-to-end UI behavior.
 
+Companion quick reference:
+
+- `docs/workflow/browser-testing-checklist.md`
+
 ## Goals
 
 - keep browser testing deterministic enough to be reviewable
@@ -47,6 +51,13 @@ Operational rules:
 6. if the `9222` endpoint is unavailable, stop and ask before launching or replacing the debug session
 
 This is stricter than the generic live-attach guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent drifts into a clean browser.
+
+MCP attachment rules:
+
+- when Codex uses `chrome-devtools-mcp` against the live browser, configure it with `--browser-url=http://127.0.0.1:9222`
+- do not combine `--browser-url` with `--channel`; that combination causes `chrome-devtools-mcp` startup failure and the browser tools will not register in the session
+- start the Chrome Beta debug browser before starting the Codex session; if Codex starts first, the browser tools may not bind even when the config is otherwise correct
+- for wallet or extension-backed flows, prefer attaching to the already-running debug browser over asking MCP to launch its own Chrome instance
 
 ## User-Managed Session Contract
 
@@ -201,6 +212,7 @@ Examples of tooling-path failure that must be fixed before product conclusions:
 - the browser tool is attached to a blank automation context instead of the live Chrome Beta debug-profile tab
 - the `9222` endpoint is live but the expected logged-in app tab is missing
 - the browser is open under the wrong profile and therefore missing required extensions or wallet state
+- `chrome-devtools-mcp` is configured with mutually exclusive flags such as `--channel` and `--browser-url`, so Codex never receives the browser tool bindings even though the server appears enabled in config
 
 If the flow depends on browser state that is unavailable in automation:
 
@@ -227,3 +239,4 @@ This workflow was tightened after friction from a live wallet-testing session. T
 - treat browser-tooling failure as its own class of blocker and fix it before resuming product validation
 - if `127.0.0.1:9222` is already live, reuse that Chrome Beta debug session and never spin up a separate Chrome session for testing
 - if the `9222` session is missing and the user has not asked the agent to replace it, give the user the launch command rather than opening a different browser session
+- if Chrome DevTools MCP tools are missing from the session, verify both the debug endpoint and the MCP args before blaming the browser state

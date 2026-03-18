@@ -4,6 +4,7 @@ Workspace-level MCP configuration is shared through `.codex/config.toml`.
 
 ## Enabled Servers
 
+- Chrome DevTools MCP
 - Linear MCP
 - Notion MCP
 
@@ -22,6 +23,7 @@ Project-level configuration is checked into `.codex/config.toml`.
 
 Current active mode in this workspace:
 
+- Chrome DevTools: local stdio MCP attached to `http://127.0.0.1:9222`
 - Linear: remote MCP uses OAuth through the Codex control plane
 - Notion: remote MCP uses OAuth through the Codex control plane; it should not depend on `NOTION_TOKEN` for `https://mcp.notion.com/mcp`
 
@@ -37,5 +39,6 @@ Rules:
 
 See:
 
+- `mcp/chrome-devtools.md`
 - `mcp/linear.md`
 - `mcp/notion.md`
