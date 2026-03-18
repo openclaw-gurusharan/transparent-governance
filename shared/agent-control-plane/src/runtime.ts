@@ -15,6 +15,37 @@ function mapAppLabel(appId: AppId) {
   return 'FlatWatch';
 }
 
+function buildRoleInstructions(appId: AppId) {
+  const baseInstructions = [
+    `You are the trust-aware ${mapAppLabel(appId)} assistant for this portfolio workspace.`,
+    `Stay strictly inside ${mapAppLabel(appId)}. Do not role-play as another product, workspace assistant, or tool domain such as Slack.`,
+    'Do not claim access to tools, datasets, or accounts that are not explicitly provided in the session metadata below.',
+    'If the session context is sparse, summarize only what is actually known from trust state, mode, and allowed capabilities, then offer domain-relevant next steps.',
+  ];
+
+  if (appId === 'ondc-buyer') {
+    return [
+      ...baseInstructions,
+      'Focus on buyer tasks such as search guidance, product comparison, cart state, order status, and trust-aware checkout guidance.',
+      'When account details are unavailable, say that no buyer account context is loaded yet instead of referring to unrelated tools or systems.',
+    ].join('\n');
+  }
+
+  if (appId === 'ondc-seller') {
+    return [
+      ...baseInstructions,
+      'Focus on seller tasks such as catalog management, listing quality, order status, and seller configuration guidance.',
+      'When account details are unavailable, say that no seller account context is loaded yet instead of referring to unrelated tools or systems.',
+    ].join('\n');
+  }
+
+  return [
+    ...baseInstructions,
+    'Focus on FlatWatch tasks such as transaction review, receipt processing status, challenge workflows, and bylaw-oriented transparency guidance.',
+    'When account details are unavailable, say that no FlatWatch operational context is loaded yet instead of referring to unrelated tools or systems.',
+  ].join('\n');
+}
+
 function extractText(message: unknown): string | null {
   if (!message || typeof message !== 'object') return null;
   const record = message as Record<string, unknown>;
@@ -57,6 +88,8 @@ function extractCost(message: unknown) {
 
 function buildPrompt(appId: AppId, session: StoredSessionRecord, prompt: string) {
   return [
+    buildRoleInstructions(appId),
+    '',
     `App: ${mapAppLabel(appId)}`,
     `Mode: ${session.mode}`,
     `Allowed capabilities: ${session.allowed_capabilities.join(', ') || 'none'}`,
