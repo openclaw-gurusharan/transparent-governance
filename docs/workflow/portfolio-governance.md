@@ -16,8 +16,9 @@ Use this workflow before major feature, enhancement, architecture, or governance
    - architecture note
    - roadmap note
 8. Implement in the correct repo(s).
-9. Sync Linear status and Notion summary when the work lands or changes direction.
-10. If the change supersedes an older architecture brief or governance note, update the older artifact to point at the new governing decision before closing the loop.
+9. If the work materially changes current cross-repo architecture, update `ARCHITECTURE.md` and the owning deeper doc in the same workstream.
+10. Sync Linear status and Notion summary when the work lands or changes direction.
+11. If the change supersedes an older architecture brief or governance note, update the older artifact to point at the new governing decision before closing the loop.
 
 Companion workflows:
 
