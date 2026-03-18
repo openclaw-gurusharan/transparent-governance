@@ -24,9 +24,16 @@ When this repository is used at the `CodexWorkspace` root, those child repos exi
 
 This repo exists to keep the multi-project governance layer legible, versioned, and reviewable without coupling it to any one child project.
 
+## Start Here
+
+- [ARCHITECTURE.md](/Users/gurusharan/Documents/remote-claude/CodexWorkspace/ARCHITECTURE.md): root-level mission, current architecture, protocol boundaries, and operating model
+- [docs/reference/MISSION.md](/Users/gurusharan/Documents/remote-claude/CodexWorkspace/docs/reference/MISSION.md): canonical mission
+- [docs/reference/WORKSPACE-SCOPE.md](/Users/gurusharan/Documents/remote-claude/CodexWorkspace/docs/reference/WORKSPACE-SCOPE.md): workspace scope and architecture guardrails
+
 ## Source Layout
 
 - `AGENTS.md`: workspace instruction source
+- `ARCHITECTURE.md`: root-level architecture and orientation brief
 - `ROADMAP.md`: portfolio roadmap
 - `docs/`: governance, workflow, architecture, and reference docs
 - `mcp/`: MCP integration notes

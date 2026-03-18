@@ -10,6 +10,7 @@ import type {
   AppId,
   StoredSessionRecord,
 } from './contracts.js';
+import { mergeBuyerBrowserState } from './buyer-orchestrator.js';
 import { buildRuntimeSnapshot, recordUsage } from './entitlements.js';
 import { getSession, saveSession } from './store.js';
 import { fetchTrustSnapshot } from './trust.js';
@@ -51,6 +52,27 @@ function createSessionId() {
   return `session-${crypto.randomUUID()}`;
 }
 
+function mergeIncomingContext(
+  appId: AppId,
+  currentContext: Record<string, unknown>,
+  incomingContext: Record<string, unknown> | undefined,
+) {
+  if (!incomingContext) {
+    return currentContext;
+  }
+
+  const merged = {
+    ...currentContext,
+    ...incomingContext,
+  };
+
+  if (appId === 'ondc-buyer') {
+    mergeBuyerBrowserState(merged, incomingContext);
+  }
+
+  return merged;
+}
+
 function buildSessionSummary(session: StoredSessionRecord): AgentSessionSummary {
   return {
     app_id: session.app_id,
@@ -60,6 +82,7 @@ function buildSessionSummary(session: StoredSessionRecord): AgentSessionSummary 
     trust_state: session.trust_state,
     mode: session.mode,
     allowed_capabilities: session.allowed_capabilities,
+    context: session.context,
     created_at: session.created_at,
     updated_at: session.updated_at,
   };
@@ -114,7 +137,7 @@ async function createOrResumeSession(
   session.mode = runtime.mode;
   session.allowed_capabilities = runtime.allowed_capabilities;
   session.task_type = payload.task_type;
-  session.context = payload.context ?? {};
+  session.context = mergeIncomingContext(appId, session.context ?? {}, payload.context ?? {});
   session.updated_at = now;
   await saveSession(session);
 
@@ -179,6 +202,7 @@ async function sendAgentMessage(
   session.trust_state = runtime.trust_state;
   session.mode = runtime.mode;
   session.allowed_capabilities = runtime.allowed_capabilities;
+  session.context = mergeIncomingContext(appId, session.context ?? {}, payload.context);
   session.messages.push({ role: 'user', content: payload.message, timestamp: Date.now() });
   session.updated_at = new Date().toISOString();
   await saveSession(session);
@@ -327,6 +351,7 @@ app.post('/api/agent/:legacyApp', async (req, res, next) => {
     await sendAgentMessage(appId, req, res, {
       session_id: session.session_id,
       message: prompt,
+      context: typeof req.body?.context === 'object' && req.body.context ? req.body.context : undefined,
     });
   } catch (error) {
     handleRouteError(res, error, 'Compatibility route failed.');

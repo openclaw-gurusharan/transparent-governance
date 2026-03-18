@@ -2,6 +2,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AgentRuntimeSnapshot, AppId, AgentStreamEvent, StoredSessionRecord } from './contracts.js';
+import { streamBuyerOrchestration } from './buyer-orchestrator.js';
 import { resolveRuntimePolicy } from './config.js';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -13,6 +14,38 @@ function mapAppLabel(appId: AppId) {
   if (appId === 'ondc-buyer') return 'ONDC Buyer';
   if (appId === 'ondc-seller') return 'ONDC Seller';
   return 'FlatWatch';
+}
+
+function buildAppSpecificInstructions(appId: AppId) {
+  if (appId === 'ondc-buyer') {
+    return [
+      'Focus on buyer tasks such as search guidance, product comparison, cart state, order status, and trust-aware checkout guidance.',
+      'When account details are unavailable, say that no buyer account context is loaded yet instead of referring to unrelated tools or systems.',
+    ];
+  }
+
+  if (appId === 'ondc-seller') {
+    return [
+      'Focus on seller tasks such as catalog management, listing quality, order status, and seller configuration guidance.',
+      'When account details are unavailable, say that no seller account context is loaded yet instead of referring to unrelated tools or systems.',
+    ];
+  }
+
+  return [
+    'Focus on FlatWatch tasks such as transaction review, receipt processing status, challenge workflows, and bylaw-oriented transparency guidance.',
+    'When account details are unavailable, say that no FlatWatch operational context is loaded yet instead of referring to unrelated tools or systems.',
+  ];
+}
+
+function buildRoleInstructions(appId: AppId) {
+  const baseInstructions = [
+    `You are the trust-aware ${mapAppLabel(appId)} assistant for this portfolio workspace.`,
+    `Stay strictly inside ${mapAppLabel(appId)}. Do not role-play as another product, workspace assistant, or tool domain such as Slack.`,
+    'Do not claim access to tools, datasets, or accounts that are not explicitly provided in the session metadata below.',
+    'If the session context is sparse, summarize only what is actually known from trust state, mode, and allowed capabilities, then offer domain-relevant next steps.',
+  ];
+
+  return [...baseInstructions, ...buildAppSpecificInstructions(appId)].join('\n');
 }
 
 function extractText(message: unknown): string | null {
@@ -57,6 +90,8 @@ function extractCost(message: unknown) {
 
 function buildPrompt(appId: AppId, session: StoredSessionRecord, prompt: string) {
   return [
+    buildRoleInstructions(appId),
+    '',
     `App: ${mapAppLabel(appId)}`,
     `Mode: ${session.mode}`,
     `Allowed capabilities: ${session.allowed_capabilities.join(', ') || 'none'}`,
@@ -88,6 +123,11 @@ export async function* streamAgentResponse(
       error: runtimeSnapshot.blocked_reason || 'Claude Agent runtime is unavailable.',
       timestamp,
     };
+    return;
+  }
+
+  if (appId === 'ondc-buyer') {
+    yield* streamBuyerOrchestration(session, prompt, runtimeSnapshot);
     return;
   }
 

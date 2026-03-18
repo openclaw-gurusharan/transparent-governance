@@ -29,6 +29,7 @@ Canonical instruction source for Codex in this workspace.
 
 ```text
 BEFORE editing root AGENTS.md or workspace governance docs -> read rules/docs-pruning-loop.md
+BEFORE orienting to current workspace architecture, repo roles, or protocol boundaries -> read ARCHITECTURE.md
 BEFORE making high-level product or trust decisions -> read docs/reference/MISSION.md
 BEFORE changing cross-repo architecture, trust model, or portfolio boundaries -> read docs/reference/WORKSPACE-SCOPE.md and rules/decision-preflight.md
 BEFORE changing the shared trust API or how portfolio apps consume trust state -> read docs/reference/TRUST-CONSUMER-CONTRACT.md
