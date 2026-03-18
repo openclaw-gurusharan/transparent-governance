@@ -195,6 +195,9 @@ Hard gates:
 Session-end enforcement:
 
 - run `./scripts/workflow/repo-publication-sweep.sh` before closing a multi-repo or git-heavy session
+- after pushing to any review branch with an open PR, run `python3 scripts/workflow/pr-review-sweep.py`
+- if the latest head only leaves outdated unresolved threads, resolve them in the same workstream instead of waiting for a manual reminder
+- do not end a session while the latest PR head still has failing checks or active unresolved review threads
 - treat any failing result from that sweep as a blocker, not a reminder
 
 Post-merge cleanup:
