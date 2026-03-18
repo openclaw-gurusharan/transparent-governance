@@ -19,6 +19,8 @@ docs/
 - Ownership and placement rules: `docs/operations/workflow-setup-responsibility-map.md`
 - Governance workflow: `docs/workflow/portfolio-governance.md`
 - Cross-repo execution loop: `docs/workflow/cross-repo-execution-loop.md`
+- Browser testing control plane: `docs/workflow/browser-testing-control-plane.md`
+- Browser testing checklist: `docs/workflow/browser-testing-checklist.md`
 - Linear issue control plane: `docs/workflow/linear-issue-control-plane.md`
 - Notion memory control plane: `docs/workflow/notion-memory-control-plane.md`
 - Notion agent-memory schema: `docs/workflow/notion-agent-memory-schema.md`
