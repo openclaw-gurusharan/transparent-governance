@@ -5,6 +5,7 @@ Use this workflow when browser validation matters for runtime state, authenticat
 Companion quick reference:
 
 - `docs/workflow/browser-testing-checklist.md`
+- `docs/workflow/portfolio-browser-acceptance-loop.md` for same-user, cross-app acceptance runs
 
 ## Goals
 

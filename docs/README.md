@@ -21,6 +21,7 @@ docs/
 - Cross-repo execution loop: `docs/workflow/cross-repo-execution-loop.md`
 - Browser testing control plane: `docs/workflow/browser-testing-control-plane.md`
 - Browser testing checklist: `docs/workflow/browser-testing-checklist.md`
+- Portfolio browser acceptance loop: `docs/workflow/portfolio-browser-acceptance-loop.md`
 - Linear issue control plane: `docs/workflow/linear-issue-control-plane.md`
 - Notion memory control plane: `docs/workflow/notion-memory-control-plane.md`
 - Notion agent-memory schema: `docs/workflow/notion-agent-memory-schema.md`

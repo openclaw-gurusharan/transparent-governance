@@ -37,6 +37,7 @@ BEFORE starting new governance, feature, or enhancement planning -> read docs/wo
 BEFORE running multi-repo execution work -> read docs/workflow/cross-repo-execution-loop.md
 BEFORE changing branching, worktree, merge, or verification-gate policy -> read docs/workflow/git-governance-control-plane.md
 BEFORE browser testing, wallet-flow validation, or live DOM inspection -> read docs/workflow/browser-testing-control-plane.md
+BEFORE running first-time-user or same-wallet browser acceptance across portfolio apps -> read docs/workflow/portfolio-browser-acceptance-loop.md
 BEFORE changing issue tracking expectations -> read docs/workflow/linear-issue-control-plane.md
 BEFORE changing durable memory / ADR / research capture rules -> read docs/workflow/notion-memory-control-plane.md
 BEFORE changing Notion memory structure or retrieval rules -> read docs/workflow/notion-agent-memory-schema.md
