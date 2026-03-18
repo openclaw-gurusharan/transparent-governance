@@ -7,12 +7,12 @@ Canonical instruction source for Codex in this workspace.
 - Read and follow `AGENTS.md` as the canonical instruction source for this workspace.
 - Load only the docs referenced by this file's trigger lines that match the current task.
 - `CLAUDE.md` is optional and not required for Codex operation.
+- Child-repo `AGENTS.md` files supplement this file with repo-local constraints only; they do not override workspace governance unless this file explicitly allows a repo-local exception.
 
 ## Workspace Scope
 
 - This root governs cross-repo architecture, governance, issue workflow, memory workflow, and MCP setup for `aadhaar-chain`, `ondc-buyer`, `ondc-seller`, and `flatwatch`.
 - Child repositories own implementation detail, tests, and repo-local execution instructions.
-- For workspace-level governance, publication sweeps, and session introspection: do not load child-repo `JARVIS.md`; use child-repo execution memory only when actively implementing inside that repo.
 
 ## Agent Behavior Contract
 
