@@ -57,7 +57,7 @@ Before opening the journey:
 1. Reuse the Chrome Beta debug profile on `127.0.0.1:9222`.
 2. Confirm the required wallet extension is installed in that profile.
 3. Start the local app servers and required backends.
-4. Classify any missing dependency before testing:
+4. If a dependency is found to be missing during setup, classify the reason:
    - product bug
    - missing runtime dependency
    - wrong browser profile or session
@@ -114,7 +114,7 @@ Each issue should capture:
 
 Recommended issue title pattern:
 
-- `Browser acceptance: first-time portfolio user journey`
+- `{repo}: Browser acceptance: first-time portfolio user journey`
 
 ### Notion
 
