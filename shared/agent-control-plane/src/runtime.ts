@@ -2,6 +2,7 @@ import { query } from '@anthropic-ai/claude-agent-sdk';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AgentRuntimeSnapshot, AppId, AgentStreamEvent, StoredSessionRecord } from './contracts.js';
+import { streamBuyerOrchestration } from './buyer-orchestrator.js';
 import { resolveRuntimePolicy } from './config.js';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -121,6 +122,11 @@ export async function* streamAgentResponse(
       error: runtimeSnapshot.blocked_reason || 'Claude Agent runtime is unavailable.',
       timestamp,
     };
+    return;
+  }
+
+  if (appId === 'ondc-buyer') {
+    yield* streamBuyerOrchestration(session, prompt, runtimeSnapshot);
     return;
   }
 

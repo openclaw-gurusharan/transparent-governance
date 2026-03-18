@@ -5,8 +5,8 @@ import { getOrCreateUsage, updateUsage } from './store.js';
 
 const APP_CAPABILITIES: Record<AppId, { read: string[]; write: string[] }> = {
   'ondc-buyer': {
-    read: ['search', 'product_detail', 'cart_state', 'order_status', 'trust_checkout_guidance'],
-    write: ['checkout_mutation'],
+    read: ['intent_parse', 'search_catalog', 'select_offer', 'prepare_checkout', 'get_order_status', 'get_support_case_status'],
+    write: ['confirm_order', 'cancel_order', 'create_support_case'],
   },
   'ondc-seller': {
     read: ['catalog_read', 'listing_quality_analysis', 'order_status', 'seller_config_guidance'],
