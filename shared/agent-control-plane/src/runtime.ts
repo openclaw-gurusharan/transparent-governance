@@ -16,6 +16,27 @@ function mapAppLabel(appId: AppId) {
   return 'FlatWatch';
 }
 
+function buildAppSpecificInstructions(appId: AppId) {
+  if (appId === 'ondc-buyer') {
+    return [
+      'Focus on buyer tasks such as search guidance, product comparison, cart state, order status, and trust-aware checkout guidance.',
+      'When account details are unavailable, say that no buyer account context is loaded yet instead of referring to unrelated tools or systems.',
+    ];
+  }
+
+  if (appId === 'ondc-seller') {
+    return [
+      'Focus on seller tasks such as catalog management, listing quality, order status, and seller configuration guidance.',
+      'When account details are unavailable, say that no seller account context is loaded yet instead of referring to unrelated tools or systems.',
+    ];
+  }
+
+  return [
+    'Focus on FlatWatch tasks such as transaction review, receipt processing status, challenge workflows, and bylaw-oriented transparency guidance.',
+    'When account details are unavailable, say that no FlatWatch operational context is loaded yet instead of referring to unrelated tools or systems.',
+  ];
+}
+
 function buildRoleInstructions(appId: AppId) {
   const baseInstructions = [
     `You are the trust-aware ${mapAppLabel(appId)} assistant for this portfolio workspace.`,
@@ -24,27 +45,7 @@ function buildRoleInstructions(appId: AppId) {
     'If the session context is sparse, summarize only what is actually known from trust state, mode, and allowed capabilities, then offer domain-relevant next steps.',
   ];
 
-  if (appId === 'ondc-buyer') {
-    return [
-      ...baseInstructions,
-      'Focus on buyer tasks such as search guidance, product comparison, cart state, order status, and trust-aware checkout guidance.',
-      'When account details are unavailable, say that no buyer account context is loaded yet instead of referring to unrelated tools or systems.',
-    ].join('\n');
-  }
-
-  if (appId === 'ondc-seller') {
-    return [
-      ...baseInstructions,
-      'Focus on seller tasks such as catalog management, listing quality, order status, and seller configuration guidance.',
-      'When account details are unavailable, say that no seller account context is loaded yet instead of referring to unrelated tools or systems.',
-    ].join('\n');
-  }
-
-  return [
-    ...baseInstructions,
-    'Focus on FlatWatch tasks such as transaction review, receipt processing status, challenge workflows, and bylaw-oriented transparency guidance.',
-    'When account details are unavailable, say that no FlatWatch operational context is loaded yet instead of referring to unrelated tools or systems.',
-  ].join('\n');
+  return [...baseInstructions, ...buildAppSpecificInstructions(appId)].join('\n');
 }
 
 function extractText(message: unknown): string | null {
