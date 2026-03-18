@@ -38,17 +38,17 @@ function mapAppId(raw: string): AppId {
 }
 
 function getSubjectId(req: express.Request) {
-  const subject = req.header('x-user-id') || req.header('x-subject-id') || req.query.subject_id;
+  const subject = req.header('x-user-id') || req.header('x-subject-id');
   return typeof subject === 'string' ? subject.trim() : '';
 }
 
 function getWalletAddress(req: express.Request) {
-  const wallet = req.header('x-wallet-address') || req.query.wallet_address;
+  const wallet = req.header('x-wallet-address');
   return typeof wallet === 'string' && wallet.trim() ? wallet.trim() : null;
 }
 
 function createSessionId() {
-  return `session-${crypto.randomUUID().slice(0, 12)}`;
+  return `session-${crypto.randomUUID()}`;
 }
 
 function buildSessionSummary(session: StoredSessionRecord): AgentSessionSummary {
@@ -73,7 +73,7 @@ async function resolveRequestRuntime(appId: AppId, req: express.Request) {
 
   const walletAddress = getWalletAddress(req);
   const trust = await fetchTrustSnapshot(walletAddress);
-  const runtime = buildRuntimeSnapshot(subjectId, appId, trust.state, trust.reason, req);
+  const runtime = await buildRuntimeSnapshot(subjectId, appId, trust.state, trust.reason, req);
   return { subjectId, walletAddress, trust, runtime };
 }
 
@@ -87,7 +87,7 @@ async function createOrResumeSession(
     throw new HttpError(403, runtime.blocked_reason || 'Claude Agent runtime is unavailable.');
   }
 
-  const existing = payload.resume_session_id ? getSession(appId, payload.resume_session_id) : null;
+  const existing = payload.resume_session_id ? await getSession(appId, payload.resume_session_id) : null;
   if (existing && existing.subject_id !== subjectId) {
     throw new HttpError(403, 'Cannot resume a session owned by another subject.');
   }
@@ -116,7 +116,7 @@ async function createOrResumeSession(
   session.task_type = payload.task_type;
   session.context = payload.context ?? {};
   session.updated_at = now;
-  saveSession(session);
+  await saveSession(session);
 
   return {
     runtime,
@@ -163,14 +163,14 @@ async function sendAgentMessage(
     throw new HttpError(401, 'Authentication required.');
   }
 
-  const session = getSession(appId, payload.session_id);
+  const session = await getSession(appId, payload.session_id);
   if (!session || session.subject_id !== subjectId) {
     throw new HttpError(404, 'Session not found.');
   }
 
   const walletAddress = getWalletAddress(req) ?? session.wallet_address;
   const trust = await fetchTrustSnapshot(walletAddress);
-  const runtime = buildRuntimeSnapshot(subjectId, appId, trust.state, trust.reason, req);
+  const runtime = await buildRuntimeSnapshot(subjectId, appId, trust.state, trust.reason, req);
   if (!runtime.agent_access) {
     throw new HttpError(403, runtime.blocked_reason || 'Claude Agent runtime is unavailable.');
   }
@@ -181,7 +181,7 @@ async function sendAgentMessage(
   session.allowed_capabilities = runtime.allowed_capabilities;
   session.messages.push({ role: 'user', content: payload.message, timestamp: Date.now() });
   session.updated_at = new Date().toISOString();
-  saveSession(session);
+  await saveSession(session);
 
   const events = async function* (): AsyncGenerator<AgentStreamEvent> {
     let finalResult = '';
@@ -202,10 +202,10 @@ async function sendAgentMessage(
       session.messages.push({ role: 'assistant', content: finalResult, timestamp: Date.now() });
     }
     session.updated_at = new Date().toISOString();
-    saveSession(session);
+    await saveSession(session);
 
     if (finalResult) {
-      const usage = recordUsage(session.subject_id, session.app_id, estimatedCostUsd);
+      const usage = await recordUsage(session.subject_id, session.app_id, estimatedCostUsd);
       yield {
         type: 'usage',
         usage: {
@@ -286,7 +286,7 @@ app.get('/api/agent/:appId/sessions/:sessionId', async (req, res) => {
     if (!subjectId) {
       throw new HttpError(401, 'Authentication required.');
     }
-    const session = getSession(appId, req.params.sessionId);
+    const session = await getSession(appId, req.params.sessionId);
     if (!session || session.subject_id !== subjectId) {
       throw new HttpError(404, 'Session not found.');
     }

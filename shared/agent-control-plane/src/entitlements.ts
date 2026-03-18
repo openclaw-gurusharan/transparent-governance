@@ -30,14 +30,14 @@ function buildAllowedCapabilities(appId: AppId, mode: 'blocked' | 'read_only' | 
   return [...APP_CAPABILITIES[appId].read, ...APP_CAPABILITIES[appId].write];
 }
 
-export function buildRuntimeSnapshot(
+export async function buildRuntimeSnapshot(
   subjectId: string,
   appId: AppId,
   trustState: PortfolioTrustState,
   trustReason: string | null,
   req?: express.Request,
-): AgentRuntimeSnapshot {
-  const usage = getOrCreateUsage(subjectId, appId);
+): Promise<AgentRuntimeSnapshot> {
+  const usage = await getOrCreateUsage(subjectId, appId);
   const runtimePolicy = resolveRuntimePolicy(req);
   const mode = computeMode(runtimePolicy.runtimeAvailable, trustState);
   const blockedReason =

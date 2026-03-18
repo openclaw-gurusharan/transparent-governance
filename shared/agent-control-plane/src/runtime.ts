@@ -1,6 +1,13 @@
 import { query } from '@anthropic-ai/claude-agent-sdk';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { AgentRuntimeSnapshot, AppId, AgentStreamEvent, StoredSessionRecord } from './contracts.js';
 import { resolveRuntimePolicy } from './config.js';
+
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const AGENT_WORKSPACE_DIR = process.env.CLAUDE_AGENT_WORKSPACE_DIR
+  ? path.resolve(process.env.CLAUDE_AGENT_WORKSPACE_DIR)
+  : path.resolve(MODULE_DIR, '../../..');
 
 function mapAppLabel(appId: AppId) {
   if (appId === 'ondc-buyer') return 'ONDC Buyer';
@@ -99,7 +106,7 @@ export async function* streamAgentResponse(
         allowedTools: [],
         permissionMode: 'default',
         includePartialMessages: true,
-        cwd: process.cwd(),
+        cwd: AGENT_WORKSPACE_DIR,
         pathToClaudeCodeExecutable: runtimePolicy.claudeCodeExecutablePath ?? undefined,
       },
     })) {
