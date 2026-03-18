@@ -12,6 +12,7 @@ Canonical instruction source for Codex in this workspace.
 
 - This root governs cross-repo architecture, governance, issue workflow, memory workflow, and MCP setup for `aadhaar-chain`, `ondc-buyer`, `ondc-seller`, and `flatwatch`.
 - Child repositories own implementation detail, tests, and repo-local execution instructions.
+- For workspace-level governance, publication sweeps, and session introspection: do not load child-repo `JARVIS.md`; use child-repo execution memory only when actively implementing inside that repo.
 
 ## Agent Behavior Contract
 

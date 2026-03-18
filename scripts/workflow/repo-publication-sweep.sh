@@ -168,6 +168,12 @@ check_branch_publication() {
     return
   fi
 
+  local remote_only branch_only
+  read -r remote_only branch_only < <(git -C "$repo_path" rev-list --left-right --count "origin/main...${branch}")
+  if [[ "$branch_only" -eq 0 ]]; then
+    return
+  fi
+
   local upstream
   upstream="$(branch_upstream "$repo_path" "$branch")"
   if [[ -z "$upstream" ]]; then
