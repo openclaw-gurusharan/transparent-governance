@@ -151,6 +151,7 @@ After the run:
 1. update the Linear issues with verification evidence and residual gaps
 2. update the relevant Notion memories with reusable findings
 3. revise this workflow if the session exposed a better sequence, a missing prerequisite, or a repeated failure mode
+4. if the fixes were merged during the same workstream, reset every touched repo back to clean `main`, delete the review branches, and clear local runtime residue before the next browser pass
 
 This workflow is expected to evolve. The goal is not to freeze it early; the goal
 is to keep improvements inside the governing procedure instead of losing them in
