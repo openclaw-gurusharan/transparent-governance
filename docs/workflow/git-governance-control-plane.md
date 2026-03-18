@@ -190,11 +190,18 @@ Hard gates:
 - a branch whose end-state still differs from `origin/main` must have an upstream remote branch
 - a branch whose end-state still differs from `origin/main` must have an open PR unless it has already been merged
 - current worktrees must be clean before claiming handoff complete
+- behind-only local branches with no unique commits relative to `origin/main` are cleanup noise, not unpublished work; delete them during close-out, but do not treat them as publication blockers
 
 Session-end enforcement:
 
 - run `./scripts/workflow/repo-publication-sweep.sh` before closing a multi-repo or git-heavy session
 - treat any failing result from that sweep as a blocker, not a reminder
+
+Post-merge cleanup:
+
+- fast-forward local `main` to `origin/main` after a merge lands
+- delete local topic branches once the PR is merged or closed and no local-only work remains
+- if a PR was squash-merged and the local topic branch still has unique commits but no tree diff versus `origin/main`, treat it as cleanup, not active unpublished work
 
 ## Merge Autonomy
 
