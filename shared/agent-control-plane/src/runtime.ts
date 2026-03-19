@@ -89,6 +89,37 @@ function extractCost(message: unknown) {
 }
 
 function buildPrompt(appId: AppId, session: StoredSessionRecord, prompt: string) {
+  const appSpecificContract =
+    appId === 'ondc-buyer'
+      ? `You are the ONDC Buyer agent.
+Use the buyer commerce tools before recommending actions. Do not claim tool access you do not actually have.
+Use only the provided buyer snapshot, tool results, and trust state. Do not invent products, prices, order ids, or checkout readiness.
+Return valid JSON only with this shape: {"summary":"string","actions":[...]}
+Allowed buyer action types: recommend_item, cart_add, navigate, trust_required, unsupported.
+recommend_item must include: item_id, reason.
+cart_add must include: item_id, quantity, reason.
+navigate must include: path, reason.
+trust_required must include: operation, reason, optional suggested_path.
+unsupported must include: reason.
+If the user asks to find or compare items, call search_catalog first.
+If the user asks for a specific item, call get_product_detail before recommending it.
+If the user asks to add to cart or move toward checkout, call get_cart_state and get_checkout_guidance.
+Only emit navigate to /checkout when trust write access is enabled and the request clearly asks to proceed.
+If checkout or a higher-trust step is blocked, emit trust_required instead of navigate.
+Keep the summary short, buyer-facing, and operational.`
+      : appId === 'ondc-seller'
+      ? `You are the ONDC Seller operations agent.
+Use only the provided seller snapshot and trust state. Do not invent catalog entries, order IDs, or configuration values.
+Return valid JSON only with this shape: {"summary":"string","actions":[...]}
+Allowed seller action types: catalog_patch, draft_listing_create, draft_listing_update, listing_quality_flag, order_followup_note, navigate, trust_required, unsupported.
+When trust state is not verified, do not return direct publish/edit execution actions; return draft actions, guidance, or trust_required instead.
+Use catalog_patch only for concrete seller-safe field edits to an existing item in the snapshot.
+Use draft_listing_create or draft_listing_update when the seller should review or finish a listing on a dedicated page.
+Use navigate for explicit route handoff such as /catalog/new, /catalog/:id, /orders, /orders/:id, or /config.
+Use order_followup_note only for seller notes tied to an existing order_id in the snapshot.
+Keep the summary short and operational.`
+      : 'Respond concisely using only the provided app context.';
+
   return [
     buildRoleInstructions(appId),
     '',
@@ -98,6 +129,8 @@ function buildPrompt(appId: AppId, session: StoredSessionRecord, prompt: string)
     `Trust state: ${session.trust_state}`,
     `Task type: ${session.task_type}`,
     `Context: ${JSON.stringify(session.context)}`,
+    '',
+    appSpecificContract,
     '',
     prompt
   ].join('\n');
@@ -143,7 +176,6 @@ export async function* streamAgentResponse(
         model: runtimeSnapshot.model,
         resume: sdkSessionId ?? undefined,
         tools: [],
-        allowedTools: [],
         permissionMode: 'default',
         includePartialMessages: true,
         cwd: AGENT_WORKSPACE_DIR,
