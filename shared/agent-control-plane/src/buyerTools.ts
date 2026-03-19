@@ -3,7 +3,8 @@ import { z } from 'zod';
 import type { PortfolioTrustState, StoredSessionRecord } from './contracts.js';
 
 const BUYER_TOOL_SERVER_NAME = 'buyer_commerce';
-
+const MAX_CATALOG_SEARCH_RESULTS = 6;
+const MAX_RECENT_ORDER_RESULTS = 5;
 interface BuyerCatalogItem {
   id: string;
   name: string;
@@ -66,8 +67,23 @@ function safeNumber(value: unknown, fallback = 0) {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }
 
+function isPortfolioTrustState(value: string): value is PortfolioTrustState {
+  return (
+    value === 'no_identity' ||
+    value === 'identity_present_unverified' ||
+    value === 'verified' ||
+    value === 'manual_review' ||
+    value === 'revoked_or_blocked'
+  );
+}
+
 function safeBoolean(value: unknown, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
+}
+
+function parseTrustState(value: unknown, fallback: PortfolioTrustState): PortfolioTrustState {
+  const candidate = safeString(value);
+  return isPortfolioTrustState(candidate) ? candidate : fallback;
 }
 
 function parseBuyerSnapshot(session: StoredSessionRecord): BuyerSnapshot {
@@ -91,7 +107,7 @@ function parseBuyerSnapshot(session: StoredSessionRecord): BuyerSnapshot {
       : undefined,
     trust: trust
       ? {
-          state: (safeString(trust.state) as PortfolioTrustState) || session.trust_state,
+          state: parseTrustState(trust.state, session.trust_state),
           write_enabled: safeBoolean(trust.write_enabled, session.trust_state === 'verified'),
         }
       : {
@@ -215,7 +231,7 @@ export function buildBuyerToolRuntime(session: StoredSessionRecord) {
           return asToolText({
             route: snapshot.route?.path ?? '/agent',
             total_matches: matches.length,
-            items: matches.slice(0, 6),
+            items: matches.slice(0, MAX_CATALOG_SEARCH_RESULTS),
           });
         },
       ),
@@ -251,7 +267,7 @@ export function buildBuyerToolRuntime(session: StoredSessionRecord) {
           return asToolText(
             args.order_id
               ? { found: Boolean(match), order: match }
-              : { total: snapshot.orders?.total ?? 0, recent: orders.slice(0, 5) },
+              : { total: snapshot.orders?.total ?? 0, recent: orders.slice(0, MAX_RECENT_ORDER_RESULTS) },
           );
         },
       ),
