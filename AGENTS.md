@@ -2,11 +2,19 @@
 
 Canonical instruction source for Codex in this workspace.
 
+## Inheritance Contract
+
+- Global baseline: `Organization` published baseline from `/Users/gurusharan/Documents/Organization/reports/publish/publish-manifest.json`
+- Workspace parent: `none`
+- Organization routing: `inherits_by_default`
+- Local policy authority: `AGENTS.md`
+- Local CLAUDE policy: `defer_to_agents`
+
 ## Instruction Source
 
 - Read and follow `AGENTS.md` as the canonical instruction source for this workspace.
 - Load only the docs referenced by this file's trigger lines that match the current task.
-- `CLAUDE.md` is optional and not required for Codex operation.
+- `CLAUDE.md` is a deferral surface only and not a separate policy authority.
 - Child-repo `AGENTS.md` files supplement this file with repo-local constraints only; they do not override workspace governance unless this file explicitly allows a repo-local exception.
 
 ## Workspace Scope
