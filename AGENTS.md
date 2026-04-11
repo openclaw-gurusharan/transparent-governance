@@ -4,6 +4,8 @@ Canonical instruction source for Codex in this workspace.
 
 ## Instruction Source
 
+- Global baseline pointer: `/Users/gurusharan/.codex/AGENTS.md`
+
 - Read and follow `AGENTS.md` as the canonical instruction source for this workspace.
 - Load only the docs referenced by this file's trigger lines that match the current task.
 - `CLAUDE.md` is optional and not required for Codex operation.
@@ -46,3 +48,10 @@ BEFORE deciding under uncertainty -> read docs/workflow/research-validation-loop
 BEFORE changing MCP setup or tool access policy -> read mcp/README.md and the relevant mcp/*.md file
 BEFORE bootstrapping or troubleshooting Linear/Notion access -> read docs/workflow/mcp-auth-bootstrap.md
 ```
+
+## Trigger Map
+
+- BEFORE changing behavior owned by `browser-testing-checklist`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary browser-testing-checklist`
+- BEFORE changing behavior owned by `notion-memory-seed`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary notion-memory-seed`
+- BEFORE changing behavior owned by `portfolio-bootstrap-baseline`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary portfolio-bootstrap-baseline`
+- BEFORE changing behavior owned by `skills-vs-docs-map`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary skills-vs-docs-map`

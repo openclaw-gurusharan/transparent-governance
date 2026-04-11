@@ -14,7 +14,7 @@ DOCUMENT_TYPE="${3:-aadhaar}"
 
 curl -sf \
   -X POST \
-  "http://127.0.0.1:8000/api/identity/dev/fixtures/${WALLET_ADDRESS}" \
+  "http://127.0.0.1:43101/api/identity/dev/fixtures/${WALLET_ADDRESS}" \
   -H "Content-Type: application/json" \
   -d "{\"fixture_state\":\"${FIXTURE_STATE}\",\"document_type\":\"${DOCUMENT_TYPE}\"}"
 echo

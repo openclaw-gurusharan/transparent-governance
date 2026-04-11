@@ -1,6 +1,12 @@
 # Mission
 
-This workspace exists to build a trustworthy portfolio around identity, commerce, and transparency.
+Use this document as the canonical mission statement for portfolio decisions in this workspace.
+
+Decision:
+
+- prioritize systems that improve trust, consent, transparency, and auditability without centralizing blind power
+- treat `aadhaar-chain` as the trust substrate, not as a place to publish raw identity data
+- treat `ondc-buyer`, `ondc-seller`, and `flatwatch` as applications that consume or demonstrate that trust layer for distinct user problems
 
 ## Core Mission
 
@@ -83,4 +89,3 @@ This workspace draws on agent-environment and harness ideas from:
 - Anthropic’s MCP code-execution pattern
 
 These are influences, not templates to copy mechanically.
-

@@ -24,7 +24,7 @@ for pid_file in "$PID_DIR"/*.pid; do
   stop_pid_file "$pid_file"
 done
 
-for port in 3000 3002 3003 3004 8000 8001; do
+for port in 43100 43101 43102 43103 43104 43105; do
   pids="$(lsof -tiTCP:"$port" -sTCP:LISTEN 2>/dev/null || true)"
   if [ -n "$pids" ]; then
     echo "[kill] clearing port $port"
