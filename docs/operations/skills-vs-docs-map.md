@@ -1,6 +1,12 @@
 # Docs Vs MCP Map
 
-This workspace does not rely on local custom skills. Governance here is docs-first and tool-routed.
+Use this document as the canonical routing rule for when governance belongs in docs versus MCP execution paths.
+
+## Decision
+
+- use docs as the durable governance and decision surface
+- use MCP tools as the execution path for external systems of record
+- use repo-local docs and code as the primary source for single-repo implementation work
 
 ## Core Principle
 

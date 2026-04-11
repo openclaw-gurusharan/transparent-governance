@@ -4,11 +4,19 @@ Status: active
 
 Owner: workspace governance
 
+Use this document as the canonical local bootstrap baseline for the full portfolio workspace.
+
 Companion docs:
 
 - `docs/reference/MISSION.md`
 - `docs/reference/TRUST-CONSUMER-CONTRACT.md`
 - `docs/workflow/browser-testing-control-plane.md`
+
+## Decision
+
+- use one deterministic workspace bootstrap path for the full local portfolio instead of starting each repo ad hoc
+- treat the commands in this doc as the verified local operating baseline for this workspace
+- use the existing Chrome Beta debug session on `127.0.0.1:9222` for browser validation that depends on real wallet or login state
 
 ## Purpose
 
@@ -83,14 +91,14 @@ fi
 
 ## Local Port Map
 
-Use these local ports to avoid collisions during portfolio work:
+Use this dedicated high port range to avoid collisions with generic local apps that default to `3000` or `8000`:
 
-- `aadhaar-chain` frontend: `3000`
-- `aadhaar-chain` gateway: `8000`
-- `ondc-buyer` frontend: `3002`
-- `ondc-seller` frontend: `3003`
-- `flatwatch` frontend: `3004` (recommended dev override)
-- `flatwatch` backend: `8001` (recommended dev override)
+- `aadhaar-chain` frontend: `43100`
+- `aadhaar-chain` gateway: `43101`
+- `ondc-buyer` frontend: `43102`
+- `ondc-seller` frontend: `43103`
+- `flatwatch` backend: `43104`
+- `flatwatch` frontend: `43105`
 
 ## `aadhaar-chain`
 
@@ -101,7 +109,7 @@ Role: trust producer
 Frontend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/aadhaar-chain/frontend
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain/frontend
 npm install
 npm run lint
 npm run build
@@ -110,7 +118,7 @@ npm run build
 Gateway tests:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/aadhaar-chain/gateway
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain/gateway
 PYTHONPATH="$PWD/venv/lib/python3.12/site-packages${PYTHONPATH:+:$PYTHONPATH}" \
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_routes.py -q
@@ -119,15 +127,15 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
 Gateway start and health:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/aadhaar-chain
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain
 ./scripts/start-gateway.sh
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:43101/health
 ```
 
 ### Runtime notes
 
-- Frontend serves on `http://localhost:3000`.
-- Gateway serves on `http://127.0.0.1:8000`.
+- Frontend serves on `http://127.0.0.1:43100`.
+- Gateway serves on `http://127.0.0.1:43101`.
 - The gateway startup path relies on the repo’s vendored `gateway/venv` site-packages or the local `pyenv` Python 3.12 interpreter.
 
 ### Browser validation baseline
@@ -147,7 +155,7 @@ Role: trust-consuming buyer commerce surface
 
 ### Preconditions
 
-- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/Research/drams-design`.
+- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/archive/Research/drams-design`.
 - The buyer app expects a commerce backend on `http://localhost:3001` unless `VITE_API_BASE_URL` overrides it.
 
 ### Required env vars
@@ -160,7 +168,7 @@ Role: trust-consuming buyer commerce surface
 ### Verified install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/ondc-buyer
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-buyer
 npm install
 npm run lint
 npm run typecheck
@@ -171,11 +179,11 @@ npm run build
 ### Dev start
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/ondc-buyer
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-buyer
 npm run dev
 ```
 
-Expected local frontend: `http://localhost:3002`
+Expected local frontend: `http://127.0.0.1:43102`
 
 ### Browser validation target
 
@@ -195,7 +203,7 @@ Role: trust-consuming seller commerce surface
 
 ### Preconditions
 
-- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/Research/drams-design`.
+- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/archive/Research/drams-design`.
 - The seller app expects a seller backend on `http://localhost:3001` unless `VITE_API_BASE_URL` overrides it.
 
 ### Required env vars
@@ -208,7 +216,7 @@ Role: trust-consuming seller commerce surface
 ### Verified install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/ondc-seller
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-seller
 npm install
 npm run lint
 npm run typecheck
@@ -219,11 +227,11 @@ npm run build
 ### Dev start
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/ondc-seller
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-seller
 npm run dev
 ```
 
-Expected local frontend: `http://localhost:3003`
+Expected local frontend: `http://127.0.0.1:43103`
 
 ### Browser validation target
 
@@ -251,7 +259,7 @@ Backend:
 ### Verified backend install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/flatwatch/backend
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/backend
 python3 -m pip install -r requirements-dev.txt
 python3 -m pytest -q
 ```
@@ -259,7 +267,7 @@ python3 -m pytest -q
 ### Verified frontend install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/flatwatch/frontend
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/frontend
 npm install
 npm run test -- --runInBand
 npm run lint
@@ -271,14 +279,14 @@ npm run build
 Backend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/flatwatch/backend
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/backend
 uvicorn app.main:app --reload --port 8001
 ```
 
 Frontend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace/flatwatch/frontend
+cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/frontend
 npm run dev -- --port 3004
 ```
 

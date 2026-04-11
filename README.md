@@ -1,5 +1,7 @@
 # Transparent Governance
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/openclaw-gurusharan/transparent-governance)
+
 Umbrella governance and trust-control-plane repository for the OpenClaw workspace.
 
 This repository owns the shared portfolio artifacts that should not live inside any single app repository:

@@ -1,6 +1,12 @@
 # Cross-Repo Execution Loop
 
-This is the default operating loop for meaningful workspace work.
+Use this as the default operating loop for meaningful workspace work in this portfolio.
+
+Decision:
+
+- treat cross-repo work as an execution loop, not an ad hoc sequence of repo edits
+- create or confirm the execution record before material implementation when the work spans repos or changes user-facing behavior
+- do not treat the work as complete until implementation, verification, docs, and system-of-record status are all aligned
 
 ## Loop
 

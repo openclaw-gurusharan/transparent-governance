@@ -80,11 +80,11 @@ if [ "$RUN_BROWSER" -eq 1 ]; then
       exit 1
     }
   "
-  check_service "aadhaar-chain gateway" "http://127.0.0.1:8000/health"
-  check_service "flatwatch backend" "http://127.0.0.1:8001/api/health"
-  check_service "ondc-buyer frontend" "http://127.0.0.1:3002"
-  check_service "ondc-seller frontend" "http://127.0.0.1:3003"
-  check_service "flatwatch frontend" "http://127.0.0.1:3004"
+  check_service "aadhaar-chain gateway" "http://127.0.0.1:43101/health"
+  check_service "flatwatch backend" "http://127.0.0.1:43104/api/health"
+  check_service "ondc-buyer frontend" "http://127.0.0.1:43102"
+  check_service "ondc-seller frontend" "http://127.0.0.1:43103"
+  check_service "flatwatch frontend" "http://127.0.0.1:43105"
 fi
 
 if [ "$RUN_DETERMINISTIC" -eq 1 ]; then

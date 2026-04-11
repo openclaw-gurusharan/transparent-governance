@@ -1,11 +1,17 @@
 # Workspace Scope
 
-This workspace is a portfolio layer over four application repositories:
+Use this document as the canonical scope boundary for workspace-root versus child-repo ownership.
 
 - `aadhaar-chain`: identity, consent, verification, credential, and trust substrate
 - `ondc-buyer`: buyer commerce surface
 - `ondc-seller`: seller commerce surface
 - `flatwatch`: transparency and audit vertical
+
+## Decision
+
+- keep cross-repo architecture, trust policy, issue workflow, memory workflow, and MCP governance at the workspace root
+- keep implementation details, tests, and repo-local execution instructions inside the child repositories
+- treat `aadhaar-chain` as the shared trust layer and the other apps as consumers of explicit trust capabilities
 
 ## Governance Boundary
 
@@ -48,4 +54,3 @@ Child repos own:
 - If the change affects multiple repos or portfolio direction, update workspace docs first.
 - If the change only affects one app’s internals, update that app repo directly.
 - If the change affects both, update workspace governance and repo implementation in the same workstream.
-

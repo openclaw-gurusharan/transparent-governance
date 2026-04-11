@@ -1,6 +1,12 @@
 # Notion Memory Seed
 
-These are the first durable memory entries this workspace should create once Notion access is authenticated.
+Create these entries first once Notion access is authenticated.
+
+Decision:
+
+- seed Notion with the core workspace decisions before adding narrower project memory
+- use this set to establish the privacy, MCP, memory-placement, and trust-boundary defaults for future work
+- do not create ad hoc durable memory that conflicts with these seed entries without an explicit superseding decision
 
 ## Seed Entries
 
@@ -81,4 +87,3 @@ Once Notion is connected:
 1. create the `Agent Memory` database with the approved schema
 2. create these seed entries first
 3. then add new entries only when they meet the memory threshold
-
