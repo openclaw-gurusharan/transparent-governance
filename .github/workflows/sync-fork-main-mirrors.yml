@@ -1,0 +1,31 @@
+name: Sync Fork Main Mirrors
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+concurrency:
+  group: sync-fork-main-mirrors
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    if: github.repository == 'openclaw-gurusharan/transparent-governance'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate GitHub token
+        env:
+          GH_TOKEN: ${{ secrets.FORK_SYNC_TOKEN }}
+        run: gh auth status
+
+      - name: Sync fork main mirrors
+        env:
+          GH_TOKEN: ${{ secrets.FORK_SYNC_TOKEN }}
+        run: ./scripts/workflow/sync-fork-main-mirrors.sh
