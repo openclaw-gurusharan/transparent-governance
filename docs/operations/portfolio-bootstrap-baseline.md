@@ -31,26 +31,40 @@ This doc is operational, not aspirational. It records the commands that were ver
 - Browser validation for auth or wallet flows must use the existing Chrome Beta debug session on `127.0.0.1:9222` with `~/.codex/chrome-beta-debug-profile`.
 - If the required logged-in tab is missing, stop and ask the user to open the app and log in before testing.
 
+## Path Variables
+
+Set these variables once per shell before running the commands in this document:
+
+```bash
+export WORKSPACE_ROOT="/absolute/path/to/CodexWorkspace"
+export DRAMS_ROOT="/absolute/path/to/drams-design"
+export PYTHON_BIN="${PYTHON_BIN:-python3}"
+```
+
+- `WORKSPACE_ROOT` must point to this workspace root.
+- `DRAMS_ROOT` is required only for repos that depend on the local DRAMS package.
+- `PYTHON_BIN` should resolve to a Python 3.12-compatible interpreter when running AadhaarChain gateway checks.
+
 ## Workspace Startup
 
 Use the workspace scripts when you want the full local stack instead of starting each repo by hand:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace
+cd "$WORKSPACE_ROOT"
 ./scripts/portfolio/start-dev.sh
 ```
 
 To stop the full stack:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace
+cd "$WORKSPACE_ROOT"
 ./scripts/portfolio/stop-dev.sh
 ```
 
 To seed the current wallet into a deterministic trust state for browser validation:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace
+cd "$WORKSPACE_ROOT"
 ./scripts/portfolio/seed-trust-fixture.sh <wallet-address> verified
 ```
 
@@ -59,7 +73,7 @@ For FlatWatch browser validation, connect the same Solflare wallet used in Aadha
 To run the full live trust-state matrix against the existing buyer, seller, and FlatWatch tabs:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace
+cd "$WORKSPACE_ROOT"
 ./scripts/portfolio/verify-trust-matrix.py
 ```
 
@@ -68,7 +82,7 @@ The matrix harness reuses the existing Chrome Beta debug-profile session on `127
 To run the full acceptance gate for the portfolio:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/CodexWorkspace
+cd "$WORKSPACE_ROOT"
 ./scripts/portfolio/acceptance-gate.sh
 ```
 
@@ -109,7 +123,7 @@ Role: trust producer
 Frontend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain/frontend
+cd "$WORKSPACE_ROOT/aadhaar-chain/frontend"
 npm install
 npm run lint
 npm run build
@@ -118,16 +132,16 @@ npm run build
 Gateway tests:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain/gateway
+cd "$WORKSPACE_ROOT/aadhaar-chain/gateway"
 PYTHONPATH="$PWD/venv/lib/python3.12/site-packages${PYTHONPATH:+:$PYTHONPATH}" \
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-/Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_routes.py -q
+"$PYTHON_BIN" -m pytest tests/test_routes.py -q
 ```
 
 Gateway start and health:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/aadhaar-chain
+cd "$WORKSPACE_ROOT/aadhaar-chain"
 ./scripts/start-gateway.sh
 curl http://127.0.0.1:43101/health
 ```
@@ -155,7 +169,7 @@ Role: trust-consuming buyer commerce surface
 
 ### Preconditions
 
-- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/archive/Research/drams-design`.
+- Local DRAMS package must exist at `$DRAMS_ROOT`.
 - The buyer app expects a commerce backend on `http://localhost:3001` unless `VITE_API_BASE_URL` overrides it.
 
 ### Required env vars
@@ -168,7 +182,7 @@ Role: trust-consuming buyer commerce surface
 ### Verified install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-buyer
+cd "$WORKSPACE_ROOT/ondc-buyer"
 npm install
 npm run lint
 npm run typecheck
@@ -179,7 +193,7 @@ npm run build
 ### Dev start
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-buyer
+cd "$WORKSPACE_ROOT/ondc-buyer"
 npm run dev
 ```
 
@@ -203,7 +217,7 @@ Role: trust-consuming seller commerce surface
 
 ### Preconditions
 
-- Local DRAMS package must exist at `/Users/gurusharan/Documents/remote-claude/archive/Research/drams-design`.
+- Local DRAMS package must exist at `$DRAMS_ROOT`.
 - The seller app expects a seller backend on `http://localhost:3001` unless `VITE_API_BASE_URL` overrides it.
 
 ### Required env vars
@@ -216,7 +230,7 @@ Role: trust-consuming seller commerce surface
 ### Verified install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-seller
+cd "$WORKSPACE_ROOT/ondc-seller"
 npm install
 npm run lint
 npm run typecheck
@@ -227,7 +241,7 @@ npm run build
 ### Dev start
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/ondc-seller
+cd "$WORKSPACE_ROOT/ondc-seller"
 npm run dev
 ```
 
@@ -259,7 +273,7 @@ Backend:
 ### Verified backend install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/backend
+cd "$WORKSPACE_ROOT/flatwatch/backend"
 python3 -m pip install -r requirements-dev.txt
 python3 -m pytest -q
 ```
@@ -267,7 +281,7 @@ python3 -m pytest -q
 ### Verified frontend install and checks
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/frontend
+cd "$WORKSPACE_ROOT/flatwatch/frontend"
 npm install
 npm run test -- --runInBand
 npm run lint
@@ -279,14 +293,14 @@ npm run build
 Backend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/backend
+cd "$WORKSPACE_ROOT/flatwatch/backend"
 uvicorn app.main:app --reload --port 8001
 ```
 
 Frontend:
 
 ```bash
-cd /Users/gurusharan/Documents/remote-claude/active/CodexWorkspace/flatwatch/frontend
+cd "$WORKSPACE_ROOT/flatwatch/frontend"
 npm run dev -- --port 3004
 ```
 

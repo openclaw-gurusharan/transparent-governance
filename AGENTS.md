@@ -4,7 +4,7 @@ Canonical instruction source for Codex in this workspace.
 
 ## Instruction Source
 
-- Global baseline pointer: `/Users/gurusharan/.codex/AGENTS.md`
+- Global baseline pointer: `~/.codex/AGENTS.md`
 
 - Read and follow `AGENTS.md` as the canonical instruction source for this workspace.
 - Load only the docs referenced by this file's trigger lines that match the current task.
@@ -51,7 +51,7 @@ BEFORE bootstrapping or troubleshooting Linear/Notion access -> read docs/workfl
 
 ## Trigger Map
 
-- BEFORE changing behavior owned by `browser-testing-checklist`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary browser-testing-checklist`
-- BEFORE changing behavior owned by `notion-memory-seed`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary notion-memory-seed`
-- BEFORE changing behavior owned by `portfolio-bootstrap-baseline`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary portfolio-bootstrap-baseline`
-- BEFORE changing behavior owned by `skills-vs-docs-map`: `workflow --docs-dir /Users/gurusharan/Documents/remote-claude/active/apps/CodexWorkspace/docs summary skills-vs-docs-map`
+- BEFORE changing behavior owned by `browser-testing-checklist`: `workflow --docs-dir docs summary browser-testing-checklist`
+- BEFORE changing behavior owned by `notion-memory-seed`: `workflow --docs-dir docs summary notion-memory-seed`
+- BEFORE changing behavior owned by `portfolio-bootstrap-baseline`: `workflow --docs-dir docs summary portfolio-bootstrap-baseline`
+- BEFORE changing behavior owned by `skills-vs-docs-map`: `workflow --docs-dir docs summary skills-vs-docs-map`
