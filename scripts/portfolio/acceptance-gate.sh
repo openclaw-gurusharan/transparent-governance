@@ -114,7 +114,8 @@ if [ "$RUN_DETERMINISTIC" -eq 1 ]; then
 
   run_step "flatwatch backend tests" /bin/zsh -lc "
     cd '$ROOT/flatwatch/backend'
-    python3 -m pytest -q
+    PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+    python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto
   "
 
   run_step "flatwatch frontend checks" /bin/zsh -lc "
