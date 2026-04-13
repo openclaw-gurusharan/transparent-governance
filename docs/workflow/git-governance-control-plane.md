@@ -41,6 +41,15 @@ Recommended implementation detail:
 - Prefer a ruleset-based standard across the `openclaw-gurusharan` organization rather than ad hoc per-repo branch rules.
   GitHub documents that only one branch protection rule applies at a time and points to rulesets as the alternative for clearer governance.
 
+Fork mirror exception:
+
+- the four child application forks under `openclaw-gurusharan/*` treat `upstream/main` as the source of truth for shipped code
+- those fork `main` branches are mirrors, not review targets
+- when a fork `main` drifts from `upstream/main`, the workspace-owned mirror sync control may rewrite fork `main` from `upstream/main`
+- that rewrite must never send fork-only commits to `upstream/main`
+- if fork `main` contains unique history, preserve it on a timestamped backup branch before rewriting
+- keep the automation outside the child repos so the mirror branch does not need fork-only workflow commits
+
 ## Merge Method Standard
 
 Workspace default: enable `squash merge` and disable merge commits on protected branches.
@@ -69,7 +78,8 @@ Default branch naming:
 
 Rules:
 
-- branch from the latest `origin/main`
+- direct repos: branch from the latest `origin/main`
+- fork-based child repos: branch from the latest `upstream/main`
 - one branch per coherent issue-sized change
 - one active Linear issue should map to one active review branch unless the issue explicitly needs multiple review branches
 - branch is the default review unit; worktree is only a local isolation tool when the same repo needs parallel active work
@@ -202,9 +212,19 @@ Session-end enforcement:
 
 Post-merge cleanup:
 
-- fast-forward local `main` to `origin/main` after a merge lands
+- direct repos: fast-forward local `main` to `origin/main` after a merge lands
+- fork-based child repos: fast-forward local `main` to `upstream/main` after a merge lands
+- fork-based child repos: treat `origin/main` as a mirror branch and keep it aligned from `upstream/main`, never by merging fork-only commits back upstream
 - delete local topic branches once the PR is merged or closed and no local-only work remains
 - if a PR was squash-merged and the local topic branch still has unique commits but no tree diff versus `origin/main`, treat it as cleanup, not active unpublished work
+
+Mirror sync control:
+
+- owner: workspace governance repo, not child app repos
+- implementation: `.github/workflows/sync-fork-main-mirrors.yml` running `scripts/workflow/sync-fork-main-mirrors.sh`
+- auth: `FORK_SYNC_TOKEN` with admin rights on the managed forks so protection can be removed and restored around the rewrite
+- cadence: scheduled every 15 minutes and runnable on demand with `workflow_dispatch`
+- behavior: capture protection, back up divergent fork history, rewrite `origin/main` from `upstream/main`, then restore protection
 
 ## Merge Autonomy
 
