@@ -8,6 +8,14 @@ Primary producer: `aadhaar-chain`
 
 Primary consumers: `ondc-buyer`, `ondc-seller`, `flatwatch`
 
+Use this document as the canonical downstream-safe trust contract for portfolio consumers.
+
+## Decision
+
+- `aadhaar-chain` is the only producer of portfolio trust state
+- downstream apps may consume only the narrow, downstream-safe trust contract defined here
+- raw Aadhaar payloads, OCR output, and verifier internals must not cross this consumer boundary
+
 ## Purpose
 
 Define the single downstream-safe trust contract that portfolio apps may consume from `aadhaar-chain`.

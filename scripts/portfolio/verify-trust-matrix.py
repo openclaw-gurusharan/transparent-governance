@@ -16,14 +16,14 @@ from typing import Any
 from websocket import create_connection
 
 CDP_BASE = "http://127.0.0.1:9222"
-TRUST_API_BASE = "http://127.0.0.1:8000"
+TRUST_API_BASE = "http://127.0.0.1:43101"
 
-BUYER_ROUTE = "http://127.0.0.1:3002/checkout"
-SELLER_ROUTE = "http://127.0.0.1:3003/catalog"
+BUYER_ROUTE = "http://127.0.0.1:43102/checkout"
+SELLER_ROUTE = "http://127.0.0.1:43103/catalog"
 FLATWATCH_ROUTES = [
-    "http://127.0.0.1:3004/dashboard",
-    "http://127.0.0.1:3004/receipts",
-    "http://127.0.0.1:3004/challenges",
+    "http://127.0.0.1:43105/dashboard",
+    "http://127.0.0.1:43105/receipts",
+    "http://127.0.0.1:43105/challenges",
 ]
 
 STATE_LABELS = {
@@ -201,11 +201,11 @@ def discover_tabs() -> dict[str, str]:
         if tab.get("type") != "page":
             continue
         url = tab.get("url", "")
-        if url.startswith("http://127.0.0.1:3002/"):
+        if url.startswith("http://127.0.0.1:43102/"):
             mapping["buyer"] = tab["webSocketDebuggerUrl"]
-        elif url.startswith("http://127.0.0.1:3003/"):
+        elif url.startswith("http://127.0.0.1:43103/"):
             mapping["seller"] = tab["webSocketDebuggerUrl"]
-        elif url.startswith("http://127.0.0.1:3004/"):
+        elif url.startswith("http://127.0.0.1:43105/"):
             mapping["flatwatch"] = tab["webSocketDebuggerUrl"]
 
     missing = [name for name in ("buyer", "seller", "flatwatch") if name not in mapping]

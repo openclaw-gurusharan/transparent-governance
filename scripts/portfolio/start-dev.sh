@@ -6,6 +6,13 @@ RUNTIME_DIR="$ROOT/.codex/portfolio-dev"
 LOG_DIR="$RUNTIME_DIR/logs"
 PID_DIR="$RUNTIME_DIR/pids"
 
+AADHAAR_FRONTEND_PORT=43100
+AADHAAR_GATEWAY_PORT=43101
+ONDC_BUYER_PORT=43102
+ONDC_SELLER_PORT=43103
+FLATWATCH_BACKEND_PORT=43104
+FLATWATCH_FRONTEND_PORT=43105
+
 mkdir -p "$LOG_DIR" "$PID_DIR"
 
 kill_port() {
@@ -51,51 +58,51 @@ AADHAAR_GATEWAY_PYTHON="/Users/gurusharan/.pyenv/versions/3.12.0/bin/python3"
 
 start_service \
   "aadhaar-gateway" \
-  "8000" \
-  "http://127.0.0.1:8000/health" \
+  "$AADHAAR_GATEWAY_PORT" \
+  "http://127.0.0.1:$AADHAAR_GATEWAY_PORT/health" \
   "$ROOT/aadhaar-chain/gateway" \
-  "env PYTHONPATH='$AADHAAR_GATEWAY_PYTHONPATH\${PYTHONPATH:+:\$PYTHONPATH}' '$AADHAAR_GATEWAY_PYTHON' main.py"
+  "env PYTHONPATH='$AADHAAR_GATEWAY_PYTHONPATH\${PYTHONPATH:+:\$PYTHONPATH}' PORT='$AADHAAR_GATEWAY_PORT' '$AADHAAR_GATEWAY_PYTHON' main.py"
 
 start_service \
   "aadhaar-frontend" \
-  "3000" \
-  "http://127.0.0.1:3000" \
+  "$AADHAAR_FRONTEND_PORT" \
+  "http://127.0.0.1:$AADHAAR_FRONTEND_PORT" \
   "$ROOT/aadhaar-chain/frontend" \
-  "npm run dev -- --hostname 127.0.0.1 --port 3000"
+  "npm run dev"
 
 start_service \
   "ondc-buyer" \
-  "3002" \
-  "http://127.0.0.1:3002" \
+  "$ONDC_BUYER_PORT" \
+  "http://127.0.0.1:$ONDC_BUYER_PORT" \
   "$ROOT/ondc-buyer" \
-  "npm run dev -- --host 127.0.0.1 --port 3002"
+  "npm run dev -- --host 127.0.0.1"
 
 start_service \
   "ondc-seller" \
-  "3003" \
-  "http://127.0.0.1:3003" \
+  "$ONDC_SELLER_PORT" \
+  "http://127.0.0.1:$ONDC_SELLER_PORT" \
   "$ROOT/ondc-seller" \
-  "npm run dev -- --host 127.0.0.1 --port 3003"
+  "npm run dev -- --host 127.0.0.1"
 
 start_service \
   "flatwatch-backend" \
-  "8001" \
-  "http://127.0.0.1:8001/api/health" \
+  "$FLATWATCH_BACKEND_PORT" \
+  "http://127.0.0.1:$FLATWATCH_BACKEND_PORT/api/health" \
   "$ROOT/flatwatch/backend" \
-  "python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8001"
+  "python3 -m uvicorn app.main:app --host 127.0.0.1 --port $FLATWATCH_BACKEND_PORT"
 
 start_service \
   "flatwatch-frontend" \
-  "3004" \
-  "http://127.0.0.1:3004" \
+  "$FLATWATCH_FRONTEND_PORT" \
+  "http://127.0.0.1:$FLATWATCH_FRONTEND_PORT" \
   "$ROOT/flatwatch/frontend" \
-  "npm run dev -- --hostname 127.0.0.1 --port 3004"
+  "npm run dev"
 
 echo
 echo "[done] portfolio dev stack is ready"
-echo "  AadhaarChain frontend: http://127.0.0.1:3000"
-echo "  AadhaarChain gateway:  http://127.0.0.1:8000/health"
-echo "  ONDC Buyer:            http://127.0.0.1:3002"
-echo "  ONDC Seller:           http://127.0.0.1:3003"
-echo "  FlatWatch frontend:    http://127.0.0.1:3004"
-echo "  FlatWatch backend:     http://127.0.0.1:8001/api/health"
+echo "  AadhaarChain frontend: http://127.0.0.1:$AADHAAR_FRONTEND_PORT"
+echo "  AadhaarChain gateway:  http://127.0.0.1:$AADHAAR_GATEWAY_PORT/health"
+echo "  ONDC Buyer:            http://127.0.0.1:$ONDC_BUYER_PORT"
+echo "  ONDC Seller:           http://127.0.0.1:$ONDC_SELLER_PORT"
+echo "  FlatWatch frontend:    http://127.0.0.1:$FLATWATCH_FRONTEND_PORT"
+echo "  FlatWatch backend:     http://127.0.0.1:$FLATWATCH_BACKEND_PORT/api/health"
