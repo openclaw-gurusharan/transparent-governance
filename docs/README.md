@@ -19,6 +19,8 @@ docs/
 - Ownership and placement rules: `docs/operations/workflow-setup-responsibility-map.md`
 - Governance workflow: `docs/workflow/portfolio-governance.md`
 - Cross-repo execution loop: `docs/workflow/cross-repo-execution-loop.md`
+- Portfolio frontend deployment control plane: `docs/workflow/portfolio-vercel-deployment-control-plane.md`
+- Portfolio frontend deployment reference: `docs/reference/PORTFOLIO-VERCEL-DEPLOYMENT-REFERENCE.md`
 - Browser testing control plane: `docs/workflow/browser-testing-control-plane.md`
 - Browser testing checklist: `docs/workflow/browser-testing-checklist.md`
 - Portfolio browser acceptance loop: `docs/workflow/portfolio-browser-acceptance-loop.md`

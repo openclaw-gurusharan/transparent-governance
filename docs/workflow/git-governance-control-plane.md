@@ -240,12 +240,21 @@ Required conditions:
 
 If the repo requires a PR, Codex should push the branch, update the issue with the branch and verification evidence, and complete the merge through the allowed review path. If protections permit direct fast-forward or squash merge from the CLI, Codex may complete that merge once the gates are satisfied.
 
+Merge execution order:
+
+1. prefer the repository's normal merge path first, for example `gh pr merge --squash --delete-branch`
+2. if GitHub rejects the direct merge because of base-branch policy and the repository supports auto-merge, use `gh pr merge --auto` with the intended merge method
+3. if GitHub rejects the direct merge because of base-branch policy and the repository does not support auto-merge, use `gh pr merge --admin` once the required checks are green and workspace policy allows autonomous admin merges
+
+This workspace does not require a separate human approval step for merge execution once the repository gates are satisfied. Do not stop at a green PR solely because the GitHub UI still requires a different merge flag.
+
 Protected-branch recovery rules:
 
 - do not attempt to push local-only work on protected `main` directly
 - if a direct push is rejected because `main` contains local commits, branch from that exact state, push the branch, and continue with a PR
 - when branch protection requires conversation resolution, check unresolved review threads before attempting merge
 - when PR checks show repeated historical entries, evaluate the newest run for the current head SHA instead of assuming the full rollup is the active gate state
+- when GitHub reports that direct merge is blocked by base-branch policy, check whether repo-level auto-merge is enabled before assuming `--auto` is a valid recovery path
 
 ## Verification Gates
 

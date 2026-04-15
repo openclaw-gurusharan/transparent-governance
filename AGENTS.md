@@ -39,6 +39,7 @@ BEFORE deciding where a change belongs -> read docs/operations/workflow-setup-re
 BEFORE starting new governance, feature, or enhancement planning -> read docs/workflow/portfolio-governance.md
 BEFORE running multi-repo execution work -> read docs/workflow/cross-repo-execution-loop.md
 BEFORE changing branching, worktree, merge, or verification-gate policy -> read docs/workflow/git-governance-control-plane.md
+BEFORE deploying or reconfiguring portfolio frontend hosting, custom domains, or deployed runtime envs -> read docs/workflow/portfolio-vercel-deployment-control-plane.md and docs/reference/PORTFOLIO-VERCEL-DEPLOYMENT-REFERENCE.md
 BEFORE browser testing, wallet-flow validation, or live DOM inspection -> read docs/workflow/browser-testing-control-plane.md
 BEFORE running first-time-user or same-wallet browser acceptance across portfolio apps -> read docs/workflow/portfolio-browser-acceptance-loop.md
 BEFORE changing issue tracking expectations -> read docs/workflow/linear-issue-control-plane.md
@@ -53,5 +54,6 @@ BEFORE bootstrapping or troubleshooting Linear/Notion access -> read docs/workfl
 
 - BEFORE changing behavior owned by `browser-testing-checklist`: `workflow --docs-dir docs summary browser-testing-checklist`
 - BEFORE changing behavior owned by `notion-memory-seed`: `workflow --docs-dir docs summary notion-memory-seed`
+- BEFORE changing behavior owned by `portfolio-vercel-deployment-control-plane`: `workflow --docs-dir docs summary portfolio-vercel-deployment-control-plane`
 - BEFORE changing behavior owned by `portfolio-bootstrap-baseline`: `workflow --docs-dir docs summary portfolio-bootstrap-baseline`
 - BEFORE changing behavior owned by `skills-vs-docs-map`: `workflow --docs-dir docs summary skills-vs-docs-map`
