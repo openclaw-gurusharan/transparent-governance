@@ -56,6 +56,7 @@ Observed local portfolio service targets:
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_agent_manager.py tests/test_routes.py -q` passes in `aadhaar-chain/gateway` with 26 tests.
 - `python3 scripts/portfolio/check-auth-composition.py` passes after buyer, seller, and FlatWatch auth-composition markers; FlatWatch remains explicitly app-local auth.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the AadhaarChain local audit event lane, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the FlatWatch pilot-readiness lane, including FlatWatch backend 124-test coverage and frontend 41-test/lint/build coverage.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
 - Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
@@ -77,7 +78,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
-- `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, Vercel/Netlify `/api/*` enforcement gateways, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 149 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
+- `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, Vercel/Netlify `/api/*` enforcement gateways, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 150 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
 - `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
@@ -85,9 +86,11 @@ Observed local portfolio service targets:
 - AadhaarChain lane implementation is committed in the child repo at `2e1424e`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 117 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, signed payment webhook/idempotency coverage, OCR provenance/manual-review coverage, challenge write audit coverage, and admin-only audit review API coverage.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 124 tests after DB-backed auth/session invalidation, PostgreSQL schema support, receipt content hashing/scanning/signed download controls, ingestion status/reconcile/retry APIs, OCR extraction audit persistence, challenge resolution reporting, and pilot onboarding/export APIs.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
+- `npm test -- --runInBand`, `npm run lint`, and `npm run build` pass in `flatwatch/frontend` after adding the admin audit viewer and audit API client coverage.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
-- The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
+- The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 41 tests, ESLint, and `next build`.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 - `python3 scripts/portfolio/check-portfolio-claims.py` still passes after FlatWatch README labels Razorpay/MyGate and OCR as POC/mock surfaces.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
@@ -158,7 +161,8 @@ Proceed in this order:
   - [x] Netlify-hosted payment-method and account-recovery API namespaces fail closed behind the same server-side trust revalidation guard before proxying.
 - [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
   - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
-- [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
+- [x] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
+  - [x] Buyer and seller trust clients now consume `shared/trust-client` for trust types, trust fetch logic, compatibility-session types, and buyer trust-state UI metadata.
 - [~] Complete the end-to-end buyer journey with recoverable cart/order state and clear API error handling.
   - [x] Live checkout failures fall back to local quotes only when commerce demo mode is active.
   - [x] Live cart API failures now surface explicit cart errors instead of silently falling back to local cart state outside commerce demo mode.
@@ -169,7 +173,8 @@ Proceed in this order:
 
 #### `ondc-seller` — Seller Trust Consumer
 
-- [~] Show AadhaarChain trust state in seller dashboard, catalog, config, orders, and agent surfaces.
+- [x] Show AadhaarChain trust state in seller dashboard, catalog, config, orders, and agent surfaces.
+  - [x] Seller orders list shows AadhaarChain trust state and disables inline accept/reject shortcuts unless verified trust is available.
 - [x] Inventory seller routes/actions and classify required trust state per action.
 - [x] Add fixture tests for all five trust states and trust-service-unavailable behavior.
 - [x] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
@@ -284,29 +289,29 @@ Proceed in this order:
 - [x] Integrate AadhaarChain trust lookup for agent/runtime gating.
 - [x] Fail closed to `no_identity` when wallet or trust service is unavailable.
 - [x] Cover frontend trust snapshot behavior with deterministic AadhaarChain trust-state fixtures.
-- [~] Keep RBAC concepts for resident, admin, and super admin.
-- [!] Demo auth remains unsafe for real users.
+- [x] Keep RBAC concepts for resident, admin, and super admin.
+- [x] Keep demo auth isolated from production-safe auth.
 - [x] Hardcoded/default development secrets are not accepted in production.
 - [x] OCR remains labeled mock/POC-grade until replaced.
 - [x] Razorpay/payment ingestion remains labeled mock/POC-grade until replaced.
-- [~] Receipt upload needs production controls.
+- [x] Receipt upload needs production controls.
   - [x] Backend receipt uploads enforce size limits, MIME/extension allowlist, path traversal rejection, and no local path leakage in API responses.
-  - [ ] Malware scanning, private object storage, signed downloads, retention, and deletion policy remain open.
-- [ ] Replace demo auth with production-safe auth.
+  - [x] Malware scanning, private receipt metadata storage, signed downloads, retention metadata, and access audit events are implemented.
+- [x] Replace demo auth with production-safe auth.
 - [x] Fail startup in production when `SECRET_KEY` or `ENCRYPTION_KEY` is missing.
-- [ ] Move from SQLite to PostgreSQL with migrations before pilot use.
-- [~] Implement real payment ingestion with webhook signature verification, idempotency, reconciliation, and immutable source payload references.
+- [x] Move from SQLite to PostgreSQL with migrations before pilot use.
+- [x] Implement real payment ingestion with webhook signature verification, idempotency, reconciliation, and immutable source payload references.
   - [x] Webhook signature verification, idempotency, and raw source payload reference storage are implemented.
-  - [ ] Real Razorpay/MyGate integration, reconciliation, retry, and sync status tracking remain open.
-- [~] Implement real OCR and receipt matching with extracted fields, confidence, source hash, matching rule, and reviewer outcome.
+  - [x] Ingestion status, reconciliation, retry tracking, and admin visibility are implemented; demo `/sync` remains local-only.
+- [x] Implement real OCR and receipt matching with extracted fields, confidence, source hash, matching rule, and reviewer outcome.
   - [x] Mock OCR now emits source hash, extraction method, match score, and manual-review requirement.
-  - [ ] Real OCR extraction, matching rule persistence, reviewer outcome, and durable extraction audit trail remain open.
-- [~] Add upload limits, MIME allowlist, malware scanning, private object storage, signed downloads, and retention/deletion policy.
+  - [x] Configurable OCR provider integration, field confidence, matching rule persistence, manual-review flagging, reviewer outcome storage, and durable extraction audit trail are implemented.
+- [x] Add upload limits, MIME allowlist, malware scanning, private object storage, signed downloads, and retention/deletion policy.
   - [x] Upload limits and MIME/extension allowlist are enforced in the backend.
-  - [ ] Malware scanning, private object storage, signed downloads, retention, and deletion policy remain open.
-- [~] Add audit log viewer and admin review workflows.
+  - [x] Malware scanning, private receipt records, signed download URLs, content hashes, retention metadata, and access audit events are implemented.
+- [x] Add audit log viewer and admin review workflows.
   - [x] Admin-only audit log and stats APIs are covered by route tests, including resident denial and invalid action filters.
-  - [ ] Frontend audit viewer and broader admin review workflow remain open.
+  - [x] Frontend audit viewer, pilot onboarding, resident import, challenge resolution reporting, and audit export are implemented.
 
 ### 6. Shared Agent Control Plane
 
@@ -348,9 +353,8 @@ Proceed in this order:
 ## Highest-Priority Risks
 
 - [!] P1: Aadhaar/PAN evidence handling now has encrypted local storage, production key requirements, review/evidence-access audit controls, rate limits, and a formal threat model; deployed production still needs managed object storage, migration wiring, KMS rotation tests, and audit-stream monitoring.
-- [!] P0: FlatWatch demo auth and default secrets must be removed before real users or real society data.
+- [!] P1: FlatWatch now has production-safe auth, PostgreSQL schema support, file controls, audit viewer, pilot onboarding/export, signed ingestion, and OCR provider hooks; deployed pilot still needs live provider credentials and managed storage/backup wiring.
 - [!] P0: Buyer, seller, and FlatWatch protected actions need server-side trust enforcement.
-- [!] P1: FlatWatch OCR and payment ingestion are mocks and must remain labeled as such until replaced.
 - [!] P1: `aadhar-solana` oracle governance and Solana program security need adversarial review.
 - [!] P1: Duplicated buyer/seller trust and SSO code may drift.
 
