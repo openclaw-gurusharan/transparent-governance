@@ -165,6 +165,7 @@ Proceed in this order:
   - [x] Live order list and order detail routes now recover order state from the commerce API outside demo mode, with explicit loading and error states.
   - [x] Buyer payment selection is carried into live checkout requests and persisted on local demo orders.
   - [x] Billing profile save failures now render inline before checkout proceeds.
+  - [x] Deterministic buyer journey contract covers search, results, detail, cart, checkout, payment, confirmation, tracking, support, and agent routes.
 
 #### `ondc-seller` — Seller Trust Consumer
 
