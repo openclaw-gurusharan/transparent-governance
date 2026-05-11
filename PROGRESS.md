@@ -80,6 +80,7 @@ Observed local portfolio service targets:
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
 - `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
+- `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
 
 ## Key Findings
 
@@ -276,7 +277,7 @@ Proceed in this order:
 
 - [x] Document local service targets and browser acceptance workflow.
 - [x] Confirm local services respond when started.
-- [ ] Seed or recreate a local AadhaarChain trust fixture for the active wallet.
+- [x] Seed or recreate a local AadhaarChain trust fixture for the active wallet.
 - [ ] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
 - [ ] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
@@ -299,11 +300,10 @@ Proceed in this order:
 - Solana local validator was not observed on `8899`.
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
-- The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
 - Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `scripts/browser/check-cdp-endpoint.sh` does not find the required Chrome Beta debug-profile DevTools endpoint on `127.0.0.1:9222`.
 - Current browser preflight evidence: `scripts/portfolio/acceptance-gate.sh --browser-only` fails in the browser preflight and reports `Google` PID `14024` listening on `127.0.0.1:9222`.
 - Current Chrome plugin evidence: the plugin can list and claim Chrome tabs, but the portfolio localhost tabs render `ERR_BLOCKED_BY_CLIENT`.
 
 ## Next Checkpoint
 
-Seed an active local trust fixture for the browser wallet, then run same-wallet browser acceptance once the local portfolio services and Chrome debug session are available.
+Run same-wallet browser acceptance once the local portfolio services and Chrome debug session are available.
