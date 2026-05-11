@@ -62,7 +62,8 @@ Observed local portfolio service targets:
 - The portfolio goal is coherent: AadhaarChain produces trust state; buyer, seller, and FlatWatch consume it.
 - The current FastAPI AadhaarChain gateway is the running trust producer.
 - The cloned `aadhar-solana` repo is a larger backend candidate with Anchor programs, NestJS API, Prisma/Postgres, Redis, web, and mobile packages.
-- `aadhar-solana` is not yet a running local backend in this workspace.
+- `aadhar-solana` ownership is resolved as the long-term Solana identity, credential, revocation, and reputation layer behind AadhaarChain trust decisions, not the current downstream trust producer.
+- `aadhar-solana` is not yet a running local backend in this workspace; Solana, PostgreSQL, Redis, and package dependencies remain runtime prerequisites.
 - Current deployed shared-auth behavior is still compatibility stub territory; trust state and shared auth must stay separate.
 
 ## Checklist Operating Model
@@ -91,8 +92,8 @@ Proceed in this order:
 
 #### `aadhar-solana` — Long-Term Chain Layer
 
-- [~] Treat as the long-term Solana identity/credential layer candidate, not the active trust source.
-- [ ] Decide and document the bridge role before any downstream app depends on it.
+- [x] Treat as the long-term Solana identity/credential layer candidate, not the active trust source.
+- [x] Decide and document the bridge role before any downstream app depends on it.
 - [ ] Inventory identity registry, verification oracle, credential manager, reputation, and staking instructions.
 - [ ] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
 - [ ] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
@@ -158,12 +159,12 @@ Proceed in this order:
 
 - [x] Clone `aadhar-solana` into the workspace.
 - [x] Confirm it contains Anchor programs, NestJS API, Prisma schema, web, mobile, scripts, and tests.
-- [~] Confirm local tooling exists for Anchor and Solana CLI.
+- [x] Confirm local tooling exists for Anchor, Solana CLI, Node, Yarn, `psql`, and `redis-cli`.
 - [!] Solana local validator is not currently verified on `8899`.
 - [!] PostgreSQL is not currently responding on `5432`.
 - [!] Redis is not currently running on `6379`.
 - [!] Node/Yarn dependencies are not installed for `aadhar-solana`.
-- [ ] Decide whether `aadhar-solana` is current trust producer, reference implementation, or migration target.
+- [x] Decide whether `aadhar-solana` is current trust producer, reference implementation, or migration target.
 - [ ] Define the bridge from FastAPI AadhaarChain verification events to on-chain attestations.
 - [ ] Define signer or oracle identity, attestation format, credential issuance, revocation propagation, retry semantics, and audit references.
 - [ ] Add or run Solana program tests for unauthorized verification updates, issuer impersonation, credential misuse, oracle double response, fee vault handling, slashing, and upgrade authority.
@@ -268,4 +269,4 @@ Proceed in this order:
 
 ## Next Checkpoint
 
-Resolve `aadhar-solana` ownership, seed an active local trust fixture, then run deterministic contract checks against `docs/reference/TRUST-CONSUMER-CONTRACT.md`.
+Seed an active local trust fixture for the browser wallet, then run same-wallet browser acceptance once the local portfolio services and Chrome debug session are available.
