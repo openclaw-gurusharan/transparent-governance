@@ -379,10 +379,11 @@ Proceed in this order:
     - [ ] Buyer checkout form entry was blocked by Chrome plugin input-control detach/fill issues after verified-state checkout controls rendered.
     - [ ] FlatWatch receipt upload was blocked by Chrome plugin file chooser timeout on the hidden file input.
     - [ ] Seller config action was blocked by Chrome reporting another extension UI open on the page.
-  - [!] Signed Solana transaction journey is not currently reachable from the active portfolio browser apps.
+  - [x] Signed Solana transaction journey is reachable and browser-validated from AadhaarChain.
     - [x] Code search found no `signTransaction`, `sendTransaction`, or `signMessage` usage in the active AadhaarChain, buyer, seller, or FlatWatch frontends.
     - [x] `aadhar-solana` has Anchor transaction coverage in tests, but `PLAN.md` still treats it as a bridge/migration target rather than the active browser trust producer.
-    - [ ] A browser-visible wallet signing acceptance test requires wiring the active AadhaarChain UI to an on-chain transaction or explicit wallet-signature flow first.
+    - [x] AadhaarChain dashboard now exposes a transaction signing checkpoint that asks the connected wallet to sign a 0-lamport devnet self-transfer and does not submit it.
+    - [x] Chrome validation produced `Transaction signed` for wallet `C5svcE...g92YFF` with a local transaction signature prefix.
 - [x] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
 - [x] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
@@ -403,9 +404,9 @@ Proceed in this order:
 - Chrome browser smoke is no longer blocked when the portfolio stack is kept alive: AadhaarChain, buyer, seller, and FlatWatch render through the Chrome plugin on ports `43100`, `43102`, `43103`, and `43105`.
 - Same-wallet trust-state browser acceptance has been executed through Chrome for all five trust states; action-level browser journeys are still open.
 - Action-level browser pass now has partial evidence: seller catalog add works under verified trust; FlatWatch challenge form opens under verified trust; buyer checkout, FlatWatch receipt upload, and seller config need a cleaner Chrome interaction path.
-- Signed wallet transaction testing is blocked by missing active UI wiring: the browser apps connect wallets and call local APIs, but do not currently expose a transaction/signature prompt to approve.
+- Signed wallet transaction testing is no longer blocked for AadhaarChain: the dashboard signing checkpoint was approved in Chrome and returned a local transaction signature without submitting the transaction.
 - ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
 
-Wire or expose a browser-visible signed wallet transaction path, then rerun action-level browser journeys with the portfolio dev stack held open for the full Chrome session.
+Rerun the remaining action-level browser journeys with the portfolio dev stack held open for the full Chrome session.
