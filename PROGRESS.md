@@ -58,6 +58,7 @@ Observed local portfolio service targets:
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end across AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
+- `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 
 ## Key Findings
 
@@ -97,7 +98,7 @@ Proceed in this order:
 - [x] Treat as the long-term Solana identity/credential layer candidate, not the active trust source.
 - [x] Decide and document the bridge role before any downstream app depends on it.
 - [ ] Inventory identity registry, verification oracle, credential manager, reputation, and staking instructions.
-- [ ] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
+- [x] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
 - [ ] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
 - [ ] Add adversarial program tests before sensitive use.
 - [ ] Define upgrade authority, multisig, oracle admission, emergency pause, issuer approval, and revocation authority policy.
@@ -167,8 +168,8 @@ Proceed in this order:
 - [!] Redis is not currently running on `6379`.
 - [!] Node/Yarn dependencies are not installed for `aadhar-solana`.
 - [x] Decide whether `aadhar-solana` is current trust producer, reference implementation, or migration target.
-- [ ] Define the bridge from FastAPI AadhaarChain verification events to on-chain attestations.
-- [ ] Define signer or oracle identity, attestation format, credential issuance, revocation propagation, retry semantics, and audit references.
+- [x] Define the bridge from FastAPI AadhaarChain verification events to on-chain attestations.
+- [x] Define signer or oracle identity, attestation format, credential issuance, revocation propagation, retry semantics, and audit references.
 - [ ] Add or run Solana program tests for unauthorized verification updates, issuer impersonation, credential misuse, oracle double response, fee vault handling, slashing, and upgrade authority.
 - [ ] Make identity-derived credentials non-transferable by default unless a schema explicitly justifies transferability.
 - [ ] Define upgrade authority and governance before any sensitive dependency on deployed programs.

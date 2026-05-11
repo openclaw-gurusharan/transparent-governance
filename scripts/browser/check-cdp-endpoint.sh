@@ -21,10 +21,10 @@ print_recovery_hint() {
   cat >&2 <<EOF
 [browser] recovery:
   1. Close or move the non-CDP process currently using port $PORT.
-  2. Start the required Chrome Beta debug profile:
-     open -na "Google Chrome Beta" --args \\
-       --remote-debugging-port=$PORT \\
-       --user-data-dir="\$HOME/.codex/chrome-beta-debug-profile"
+  2. Use the Chrome plugin/system Chrome flow to attach the Chrome Beta debug
+     profile that exposes DevTools JSON on 127.0.0.1:$PORT.
+  3. Do not substitute a clean automation browser for wallet or logged-in
+     acceptance testing.
 EOF
 }
 

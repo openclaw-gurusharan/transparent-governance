@@ -133,19 +133,15 @@ Hard rule for this workspace:
 
 ## Missing Session Handoff
 
-If the workspace-standard Chrome Beta debug session cannot be found, the agent should hand the restart or launch command to the user instead of silently launching a fresh browser on its own.
+If the workspace-standard Chrome Beta debug session cannot be found, the agent should stop and ask the user to restore the Chrome plugin/debug-profile path instead of silently launching a fresh browser on its own.
 
-Default handoff command:
+Default handoff check:
 
 ```bash
-if ! curl -sf http://127.0.0.1:9222/json/version >/dev/null; then
-  open -na "Google Chrome Beta" --args \
-    --remote-debugging-port=9222 \
-    --user-data-dir="$HOME/.codex/chrome-beta-debug-profile"
-fi
+scripts/browser/check-cdp-endpoint.sh
 ```
 
-Use the force-restart variant only when the existing session is stale, bound to the wrong profile, or explicitly approved for replacement.
+Use the Chrome plugin/system Chrome flow for any restart or replacement. Do not replace the browser with shell-only automation or a clean browser profile for wallet-backed acceptance.
 
 ## Chrome Constraint
 
@@ -213,7 +209,7 @@ Examples of tooling-path failure that must be fixed before product conclusions:
 - the browser tool is attached to a blank automation context instead of the live Chrome Beta debug-profile tab
 - the `9222` endpoint is live but the expected logged-in app tab is missing
 - the browser is open under the wrong profile and therefore missing required extensions or wallet state
-- `chrome-devtools-mcp` is configured with mutually exclusive flags such as `--channel` and `--browser-url`, so Codex never receives the browser tool bindings even though the server appears enabled in config
+- the Chrome plugin browser tools are missing from the active Codex session even though the endpoint exists
 
 If the flow depends on browser state that is unavailable in automation:
 
