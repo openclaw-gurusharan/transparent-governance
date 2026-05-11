@@ -106,6 +106,79 @@ function buildPrompt(appId: AppId, session: StoredSessionRecord, prompt: string)
   ].join('\n');
 }
 
+function safeActionRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : null;
+}
+
+function trustRequiredAction(operation: string, reason: string, suggestedPath: string) {
+  return {
+    type: 'trust_required',
+    operation,
+    reason,
+    suggested_path: suggestedPath,
+  };
+}
+
+export function enforceAgentWriteTrustGate(appId: AppId, mode: StoredSessionRecord['mode'], content: string) {
+  if (mode === 'full') {
+    return content;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return content;
+  }
+
+  const envelope = safeActionRecord(parsed);
+  if (!envelope || typeof envelope.summary !== 'string' || !Array.isArray(envelope.actions)) {
+    return content;
+  }
+
+  let changed = false;
+  const actions = envelope.actions.map((entry) => {
+    const action = safeActionRecord(entry);
+    if (!action) {
+      return entry;
+    }
+
+    if (appId === 'ondc-buyer' && action.type === 'navigate' && action.path === '/checkout') {
+      changed = true;
+      return trustRequiredAction(
+        'buyer_checkout',
+        'Buyer checkout requires a verified AadhaarChain trust state before higher-trust execution.',
+        '/agent',
+      );
+    }
+
+    if (appId === 'ondc-seller' && action.type === 'catalog_patch') {
+      changed = true;
+      return trustRequiredAction(
+        'seller_catalog_write',
+        'Seller catalog write actions require a verified AadhaarChain trust state.',
+        '/catalog',
+      );
+    }
+
+    return entry;
+  });
+
+  if (!changed) {
+    return content;
+  }
+
+  return JSON.stringify(
+    {
+      ...envelope,
+      summary: `${envelope.summary} Write actions that require verified trust were blocked.`,
+      actions,
+    },
+    null,
+    2,
+  );
+}
+
 export async function* streamAgentResponse(
   appId: AppId,
   session: StoredSessionRecord,
@@ -180,9 +253,11 @@ export async function* streamAgentResponse(
       throw new Error('Claude Agent SDK returned no assistant content.');
     }
 
+    const gatedFinalText = enforceAgentWriteTrustGate(appId, session.mode, finalText);
+
     yield {
       type: 'result',
-      content: finalText,
+      content: gatedFinalText,
       sdk_session_id: sdkSessionId,
       estimated_cost_usd: totalCostUsd || undefined,
       timestamp: Date.now(),

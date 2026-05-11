@@ -63,7 +63,7 @@ Observed local portfolio service targets:
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
-- `npm test` passes in `shared/agent-control-plane` with 19 assertions across buyer, seller, FlatWatch, all five trust states, and the runtime-auth blocked path.
+- `npm test` passes in `shared/agent-control-plane` with 23 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, and server-side agent write-action gating.
 - `npm run typecheck` passes in `shared/agent-control-plane`.
 - `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
@@ -242,7 +242,7 @@ Proceed in this order:
 - [x] Compute runtime mode from app, subject, runtime availability, usage, and trust state.
 - [x] Downgrade a wallet to read-only when AadhaarChain reports no identity.
 - [~] Track app-specific read/write capabilities.
-- [ ] Ensure all agent write actions are server-side gated by verified trust.
+- [x] Ensure all agent write actions are server-side gated by verified trust.
 - [ ] Add audit events for agent capability grants, denials, tool calls, and write attempts.
 - [x] Add tests for read-only versus full mode across all trust states.
 
