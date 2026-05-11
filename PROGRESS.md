@@ -154,6 +154,7 @@ Proceed in this order:
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
 - [~] Complete the end-to-end buyer journey with recoverable cart/order state and clear API error handling.
   - [x] Live checkout failures fall back to local quotes only when commerce demo mode is active.
+  - [x] Live cart API failures now surface explicit cart errors instead of silently falling back to local cart state outside commerce demo mode.
 
 #### `ondc-seller` — Seller Trust Consumer
 
