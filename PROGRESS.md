@@ -75,7 +75,7 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
-- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 102 tests after production secret enforcement.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 105 tests after production secret enforcement and demo/mock production-startup guard coverage.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
@@ -163,8 +163,8 @@ Proceed in this order:
 #### `flatwatch` — Transparency And Audit Consumer
 
 - [~] Consume AadhaarChain trust for elevated transparency, evidence, challenge, and agent workflows.
-- [ ] Separate demo, staging, and production runtime modes.
-- [ ] Block production startup with demo auth, hardcoded/default secrets, mock Razorpay, or mock OCR unless explicitly allowed.
+- [x] Separate demo, staging, and production runtime modes.
+- [x] Block production startup with demo auth, hardcoded/default secrets, mock Razorpay, or mock OCR unless explicitly allowed.
 - [ ] Replace demo bearer auth and any-password login outside demo mode.
 - [ ] Migrate SQLite and local receipt uploads to production-grade database and object storage.
 - [ ] Replace mock payment ingestion with signed webhook verification, idempotency, reconciliation, retry, and source references.
@@ -247,7 +247,7 @@ Proceed in this order:
 - [x] Cover frontend trust snapshot behavior with deterministic AadhaarChain trust-state fixtures.
 - [~] Keep RBAC concepts for resident, admin, and super admin.
 - [!] Demo auth remains unsafe for real users.
-- [!] Hardcoded/default development secrets must not be accepted in production.
+- [x] Hardcoded/default development secrets are not accepted in production.
 - [!] OCR remains mock/POC-grade.
 - [!] Razorpay/payment ingestion remains mock/POC-grade.
 - [!] Receipt upload needs production controls.
