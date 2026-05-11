@@ -85,6 +85,7 @@ Observed local portfolio service targets:
 - `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the seller trust fixture and trust-service-unavailable coverage.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the buyer header trust-state fixture coverage.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the buyer commerce demo-mode fallback checkpoint.
 
 ## Key Findings
 
