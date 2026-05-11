@@ -76,6 +76,7 @@ Observed local portfolio service targets:
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
+- `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
 
 ## Key Findings
 
@@ -183,6 +184,7 @@ Proceed in this order:
 - [x] Clone `aadhar-solana` into the workspace.
 - [x] Confirm it contains Anchor programs, NestJS API, Prisma schema, web, mobile, scripts, and tests.
 - [x] Confirm local tooling exists for Anchor, Solana CLI, Node, Yarn, `psql`, and `redis-cli`.
+- [!] `Anchor.toml` requests Anchor `0.30.1`, while the installed `anchor` reports `0.31.1`.
 - [!] Solana local validator is not currently verified on `8899`.
 - [!] PostgreSQL is not currently responding on `5432`.
 - [!] Redis is not currently running on `6379`.
@@ -290,6 +292,7 @@ Proceed in this order:
 ## Current Blockers
 
 - `aadhar-solana` dependencies are not installed.
+- `aadhar-solana/Anchor.toml` pins Anchor `0.30.1`, but `anchor --version` reports `0.31.1`.
 - Solana local validator was not observed on `8899`.
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
