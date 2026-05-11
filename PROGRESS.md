@@ -209,7 +209,7 @@ Proceed in this order:
 - [ ] Add server-side enforcement for protected buyer actions; frontend trust display must not be the enforcement boundary.
 - [ ] Add integration tests for all AadhaarChain trust fixture states.
 - [x] Reconcile README/backend claims with actual package dependencies and backend availability.
-- [ ] Normalize identity URL and trust URL handling across the buyer app.
+- [x] Normalize identity URL and trust URL handling across the buyer app.
 
 ### 4. ONDC Seller
 
