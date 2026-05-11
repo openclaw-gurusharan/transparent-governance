@@ -267,7 +267,7 @@ Proceed in this order:
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
 - The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
-- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but the Chrome listener on `127.0.0.1:9222` returns `404` for `/json/version`, and no callable Chrome plugin browser backend is exposed in this session.
+- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `127.0.0.1:9222` is occupied by regular Google Chrome using the Default profile, returns `404` for `/json/version`, and does not expose the required Chrome Beta debug-profile DevTools endpoint.
 
 ## Next Checkpoint
 
