@@ -71,6 +71,7 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
 - `npm run typecheck` passes in `ondc-seller`.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 
 ## Key Findings
 
@@ -251,11 +252,11 @@ Proceed in this order:
 - [!] Buyer and seller duplicate trust and SSO logic.
 - [ ] Extract common trust client logic into a shared package after the active contract stabilizes.
 - [ ] Extract or centralize shared SSO/session compatibility logic where appropriate.
-- [~] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
+- [x] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
   - [x] Agent-control-plane read-only/full capability matrix covers all five trust states.
   - [x] Buyer trust fixture tests.
   - [x] Seller trust fixture tests.
-  - [ ] FlatWatch trust fixture tests.
+  - [x] FlatWatch trust fixture tests.
 - [ ] Add semantic checks that prevent unsupported claims:
   - raw identity data on-chain
   - deployed shared auth before producer auth is real
