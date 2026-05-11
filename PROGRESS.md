@@ -233,7 +233,7 @@ Proceed in this order:
   - agent write actions
 - [ ] Add backend trust enforcement for seller actions.
 - [x] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
-- [ ] Add integration tests for all AadhaarChain trust fixture states.
+- [x] Add integration tests for all AadhaarChain trust fixture states.
 - [ ] Verify actual ONDC BPP/provider integration boundaries.
 
 ### 5. FlatWatch
