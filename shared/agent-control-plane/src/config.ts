@@ -15,6 +15,7 @@ export interface AgentRuntimePolicy {
 const DEFAULT_MODEL = process.env.CLAUDE_AGENT_MODEL || 'claude-haiku-4-5-20251001';
 const EXPLICIT_CLAUDE_PATH = process.env.CLAUDE_CODE_EXECUTABLE || process.env.CLAUDE_CODE_PATH || null;
 let cachedClaudeExecutablePath: string | null | undefined;
+let cachedAllowedOrigins: Set<string> | undefined;
 
 function isTruthy(value: string | undefined, defaultValue = false) {
   if (value == null) return defaultValue;
@@ -33,6 +34,54 @@ function hostLooksLocal(value: string | undefined) {
   if (!value) return false;
   const host = value.split('/')[0]?.split(':')[0]?.trim().toLowerCase();
   return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+}
+
+function normalizeOrigin(value: string | undefined) {
+  if (!value) return null;
+  try {
+    return new URL(value).origin.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function getAllowedOrigins() {
+  if (cachedAllowedOrigins) {
+    return cachedAllowedOrigins;
+  }
+
+  cachedAllowedOrigins = new Set(
+    (process.env.CLAUDE_AGENT_ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((value) => normalizeOrigin(value.trim()))
+      .filter((value): value is string => Boolean(value)),
+  );
+  return cachedAllowedOrigins;
+}
+
+function requestOrigin(req?: express.Request) {
+  if (!req) return null;
+  const origin = normalizeOrigin(req.header('origin') ?? undefined);
+  if (origin) return origin;
+
+  const referer = req.header('referer');
+  if (referer) {
+    return normalizeOrigin(referer);
+  }
+
+  return null;
+}
+
+export function requestMatchesAllowedOrigin(req?: express.Request) {
+  const origin = requestOrigin(req);
+  if (!origin) return false;
+  return getAllowedOrigins().has(origin);
+}
+
+export function isCorsOriginAllowed(origin: string | undefined) {
+  if (!origin) return true;
+  if (hostLooksLocal(origin.replace(/^https?:\/\//, ''))) return true;
+  return getAllowedOrigins().has(origin.toLowerCase());
 }
 
 function requestLooksLocal(req?: express.Request) {
@@ -83,6 +132,7 @@ export function resolveRuntimePolicy(req?: express.Request): AgentRuntimePolicy 
   const allowLocalCli = isTruthy(process.env.CLAUDE_AGENT_ALLOW_LOCAL_CLI_AUTH, true);
   const nonProduction = process.env.NODE_ENV !== 'production';
   const localRequest = requestLooksLocal(req);
+  const allowedOriginRequest = requestMatchesAllowedOrigin(req);
   const claudeCodeExecutablePath = resolveClaudeExecutablePath();
 
   if (requestedAuthMode === 'bedrock' || requestedAuthMode === 'vertex' || requestedAuthMode === 'azure') {
@@ -134,7 +184,7 @@ export function resolveRuntimePolicy(req?: express.Request): AgentRuntimePolicy 
       };
     }
 
-    if (allowLocalCli && nonProduction && localRequest) {
+    if (allowLocalCli && nonProduction && (localRequest || allowedOriginRequest || !req)) {
       return {
         runtimeAvailable: true,
         authMode: 'local_cli',
@@ -148,7 +198,8 @@ export function resolveRuntimePolicy(req?: express.Request): AgentRuntimePolicy 
       runtimeAvailable: false,
       authMode: 'unavailable',
       model: DEFAULT_MODEL,
-      blockedReason: 'Claude Code CLI auth is restricted to localhost development. Configure API-key or cloud-provider auth for deployed runtimes.',
+      blockedReason:
+        'Claude Code CLI auth is restricted to non-production localhost or CLAUDE_AGENT_ALLOWED_ORIGINS. Configure an allowed frontend origin for development or switch deployed runtimes to API-key/cloud-provider auth.',
       claudeCodeExecutablePath,
     };
   }

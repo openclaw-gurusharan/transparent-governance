@@ -11,6 +11,7 @@ import type {
   StoredSessionRecord,
 } from './contracts.js';
 import { buildRuntimeSnapshot, recordUsage } from './entitlements.js';
+import { isCorsOriginAllowed } from './config.js';
 import { getSession, saveSession } from './store.js';
 import { fetchTrustSnapshot } from './trust.js';
 import { streamAgentResponse } from './runtime.js';
@@ -18,7 +19,18 @@ import { streamAgentResponse } from './runtime.js';
 const PORT = Number(process.env.PORT || 8100);
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (isCorsOriginAllowed(origin ?? undefined)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error(`Blocked by CORS policy: ${origin ?? 'unknown origin'}`));
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 class HttpError extends Error {

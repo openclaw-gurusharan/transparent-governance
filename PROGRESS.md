@@ -63,8 +63,8 @@ Observed local portfolio service targets:
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
-- `npm test` passes in `shared/agent-control-plane` with 23 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, and server-side agent write-action gating.
-- `npm run typecheck` passes in `shared/agent-control-plane`.
+- `npm test` passes in `shared/agent-control-plane` with 27 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, and production local-CLI blocking.
+- `npm run typecheck` passes in `shared/agent-control-plane` after the runtime-origin guard.
 - `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm test` passes in `ondc-buyer` with 56 tests, including five-state buyer checkout trust fixture coverage.
@@ -76,6 +76,7 @@ Observed local portfolio service targets:
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
 - `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
 
 ## Key Findings
@@ -161,7 +162,7 @@ Proceed in this order:
 - [ ] Grant full mode only when trust is `verified`, runtime is available, and usage policy allows it.
 - [ ] Persist auditable grants and denials by app, subject, wallet, trust state, request, and timestamp.
 - [ ] Add deterministic fixture tests for all five trust states across buyer, seller, and FlatWatch agent sessions.
-- [ ] Keep deployed agent runtime separated from public frontends and explicit about supported auth mode.
+- [x] Keep deployed agent runtime separated from public frontends and explicit about supported auth mode.
 
 ## Goal Completion Checklist
 
@@ -172,7 +173,7 @@ Proceed in this order:
 - [x] Model trust states beyond boolean verification: `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, and `revoked_or_blocked`.
 - [x] Expose `GET /api/identity/{wallet_address}`, `GET /api/identity/{wallet_address}/trust`, and `GET /api/identity/status/{verification_id}` from the active FastAPI gateway.
 - [~] Keep agent-assisted verification provenance modeled in code.
-- [ ] Lock the `/trust` OpenAPI schema as the stable downstream contract.
+- [x] Lock the `/trust` OpenAPI schema as the stable downstream contract.
 - [ ] Move identity, verification, consent, review, and audit records into durable production persistence.
 - [ ] Add production mode that cannot approve from fallback-only verification evidence.
 - [ ] Add operator review queues, reviewer identity, evidence access controls, final decisions, and appeal or correction handling.
