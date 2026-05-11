@@ -82,6 +82,7 @@ Observed local portfolio service targets:
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
 - `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
 - `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the seller trust fixture and trust-service-unavailable coverage.
 
 ## Key Findings
 
@@ -145,7 +146,7 @@ Proceed in this order:
 - [x] Inventory seller routes/actions and classify required trust state per action.
 - [x] Add fixture tests for all five trust states and trust-service-unavailable behavior.
 - [ ] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
-- [ ] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
+- [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [ ] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
 - [ ] Make seller agent writes require verified trust plus auditable approval.
 
@@ -224,7 +225,7 @@ Proceed in this order:
   - payout or bank configuration
   - agent write actions
 - [ ] Add backend trust enforcement for seller actions.
-- [ ] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
+- [x] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
 - [ ] Add integration tests for all AadhaarChain trust fixture states.
 - [ ] Verify actual ONDC BPP/provider integration boundaries.
 
