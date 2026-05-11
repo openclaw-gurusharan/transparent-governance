@@ -3,6 +3,13 @@ import { z } from 'zod';
 import type { PortfolioTrustState, StoredSessionRecord } from './contracts.js';
 
 const BUYER_TOOL_SERVER_NAME = 'buyer_commerce';
+const PORTFOLIO_TRUST_STATES = [
+  'no_identity',
+  'identity_present_unverified',
+  'verified',
+  'manual_review',
+  'revoked_or_blocked',
+] as const satisfies readonly PortfolioTrustState[];
 
 interface BuyerCatalogItem {
   id: string;
@@ -37,7 +44,7 @@ interface BuyerOrderSummary {
   }>;
 }
 
-interface BuyerSnapshot {
+export interface BuyerSnapshot {
   route?: {
     path?: string;
     search?: string;
@@ -70,7 +77,14 @@ function safeBoolean(value: unknown, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
 }
 
-function parseBuyerSnapshot(session: StoredSessionRecord): BuyerSnapshot {
+function safeTrustState(value: unknown, fallback: PortfolioTrustState): PortfolioTrustState {
+  const candidate = safeString(value);
+  return PORTFOLIO_TRUST_STATES.includes(candidate as PortfolioTrustState)
+    ? (candidate as PortfolioTrustState)
+    : fallback;
+}
+
+export function parseBuyerSnapshot(session: StoredSessionRecord): BuyerSnapshot {
   const candidate = safeRecord(session.context?.buyer_snapshot);
   if (!candidate) {
     return {};
@@ -91,7 +105,7 @@ function parseBuyerSnapshot(session: StoredSessionRecord): BuyerSnapshot {
       : undefined,
     trust: trust
       ? {
-          state: (safeString(trust.state) as PortfolioTrustState) || session.trust_state,
+          state: safeTrustState(trust.state, session.trust_state),
           write_enabled: safeBoolean(trust.write_enabled, session.trust_state === 'verified'),
         }
       : {
