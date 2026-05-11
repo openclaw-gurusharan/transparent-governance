@@ -151,11 +151,11 @@ Proceed in this order:
   - [x] Trust snapshot mapping covers missing identity plus the identity-present fixture states.
   - [x] Agent checkout routing is gated across all five trust states.
   - [x] Profile/header trust-state rendering has fixture coverage.
-- [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
+- [x] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
   - [x] Buyer local checkout, cancellation/refund, and support/dispute mutation helpers require verified trust across all five fixture states.
   - [x] Live buyer checkout, cancellation/refund, support/dispute, and agent-write request paths now attach a backend trust-policy envelope requiring server trust revalidation for protected actions.
   - [x] Netlify-hosted checkout, cancellation/refund, support/dispute, and agent-write API routes now revalidate AadhaarChain trust server-side before proxying protected writes.
-  - [ ] Payment-method and account-recovery backend routes are not present in this buyer app; enforce them when those backend surfaces exist.
+  - [x] Netlify-hosted payment-method and account-recovery API namespaces fail closed behind the same server-side trust revalidation guard before proxying.
 - [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
   - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
