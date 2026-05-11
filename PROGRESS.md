@@ -147,6 +147,7 @@ Proceed in this order:
   - [x] Profile/header trust-state rendering has fixture coverage.
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
   - [x] Buyer local checkout, cancellation/refund, and support/dispute mutation helpers require verified trust across all five fixture states.
+  - [x] Live buyer checkout, cancellation/refund, support/dispute, and agent-write request paths now attach a backend trust-policy envelope requiring server trust revalidation for protected actions.
   - [ ] True backend enforcement for protected buyer actions remains required before production use.
 - [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
   - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
