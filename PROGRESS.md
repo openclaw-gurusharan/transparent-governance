@@ -106,7 +106,7 @@ Proceed in this order:
 
 - [x] Expose `GET /api/identity/{wallet_address}/trust` as the downstream-safe contract.
 - [x] Support deterministic fixture states: `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, `revoked_or_blocked`.
-- [ ] Add schema/sample-response coverage for every `trust_version: v1` state.
+- [x] Add schema/sample-response coverage for every `trust_version: v1` state.
 - [ ] Replace local file or runtime trust state with production-grade persistent storage.
 - [ ] Implement first-class operator review with reviewer identity, evidence access controls, decision records, and audit receipts.
 - [ ] Add secure evidence storage, retention, deletion, encryption, key rotation, and evidence-access audit controls.
