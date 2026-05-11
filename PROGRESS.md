@@ -72,6 +72,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
 - `npm run typecheck` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 102 tests after production secret enforcement.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
@@ -237,7 +238,7 @@ Proceed in this order:
 - [!] Razorpay/payment ingestion remains mock/POC-grade.
 - [!] Receipt upload needs production controls.
 - [ ] Replace demo auth with production-safe auth.
-- [ ] Fail startup in production when `SECRET_KEY` or `ENCRYPTION_KEY` is missing.
+- [x] Fail startup in production when `SECRET_KEY` or `ENCRYPTION_KEY` is missing.
 - [ ] Move from SQLite to PostgreSQL with migrations before pilot use.
 - [ ] Implement real payment ingestion with webhook signature verification, idempotency, reconciliation, and immutable source payload references.
 - [ ] Implement real OCR and receipt matching with extracted fields, confidence, source hash, matching rule, and reviewer outcome.
