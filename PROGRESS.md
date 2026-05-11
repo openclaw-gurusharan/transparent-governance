@@ -4,7 +4,7 @@ Status: active
 
 Owner: workspace planning
 
-Last updated: 2026-05-11
+Last updated: 2026-05-12
 
 ## Goal Reference
 
@@ -63,6 +63,8 @@ Observed local portfolio service targets:
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
+- `npm test` passes in `shared/agent-control-plane` with 19 assertions across buyer, seller, FlatWatch, all five trust states, and the runtime-auth blocked path.
+- `npm run typecheck` passes in `shared/agent-control-plane`.
 
 ## Key Findings
 
@@ -232,7 +234,7 @@ Proceed in this order:
 - [~] Track app-specific read/write capabilities.
 - [ ] Ensure all agent write actions are server-side gated by verified trust.
 - [ ] Add audit events for agent capability grants, denials, tool calls, and write attempts.
-- [ ] Add tests for read-only versus full mode across all trust states.
+- [x] Add tests for read-only versus full mode across all trust states.
 
 ### 7. Shared Trust Client And Drift Control
 
@@ -240,7 +242,11 @@ Proceed in this order:
 - [!] Buyer and seller duplicate trust and SSO logic.
 - [ ] Extract common trust client logic into a shared package after the active contract stabilizes.
 - [ ] Extract or centralize shared SSO/session compatibility logic where appropriate.
-- [ ] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
+- [~] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
+  - [x] Agent-control-plane read-only/full capability matrix covers all five trust states.
+  - [ ] Buyer trust fixture tests.
+  - [ ] Seller trust fixture tests.
+  - [ ] FlatWatch trust fixture tests.
 - [ ] Add semantic checks that prevent unsupported claims:
   - raw identity data on-chain
   - deployed shared auth before producer auth is real
