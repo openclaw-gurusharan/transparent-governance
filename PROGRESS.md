@@ -84,6 +84,7 @@ Observed local portfolio service targets:
 - `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
 - `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the seller trust fixture and trust-service-unavailable coverage.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the buyer header trust-state fixture coverage.
 
 ## Key Findings
 
