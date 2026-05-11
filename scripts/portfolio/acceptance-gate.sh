@@ -100,6 +100,11 @@ if [ "$RUN_DETERMINISTIC" -eq 1 ]; then
     /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 scripts/portfolio/check-trust-consumer-contract.py
   "
 
+  run_step "portfolio architecture claim check" /bin/zsh -lc "
+    cd '$ROOT'
+    python3 scripts/portfolio/check-portfolio-claims.py
+  "
+
   run_step "ondc-buyer checks" /bin/zsh -lc "
     cd '$ROOT/ondc-buyer'
     npm run lint
