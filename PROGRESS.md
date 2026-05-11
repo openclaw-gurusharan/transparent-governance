@@ -57,10 +57,14 @@ Observed local portfolio service targets:
 - `python3 scripts/portfolio/check-auth-composition.py` passes after buyer, seller, and FlatWatch auth-composition markers; FlatWatch remains explicitly app-local auth.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the AadhaarChain local audit event lane, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the FlatWatch pilot-readiness lane, including FlatWatch backend 124-test coverage and frontend 41-test/lint/build coverage.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the FlatWatch SQLite startup migration fix; FlatWatch backend now has 125 tests and frontend has 41 tests/lint/build coverage.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
 - Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
-- Chrome plugin bridge check succeeded by listing open Chrome tabs, but claimed portfolio localhost tabs show `ERR_BLOCKED_BY_CLIENT`; browser acceptance remains blocked on Chrome profile access to the local app pages.
+- Chrome plugin bridge check succeeds again and browser-visible smoke now renders AadhaarChain, buyer, seller, and FlatWatch when the portfolio dev stack is kept alive during the test.
+- A controlled Chrome check proves port `43100` is reachable when a listener exists; the latest visible `ERR_CONNECTION_REFUSED` came from stale/exited dev processes, not a port-level browser block.
+- Chrome plugin same-wallet trust matrix passed for wallet `C5svcE...g92YFF` across AadhaarChain, buyer, seller, and FlatWatch for `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, and `revoked_or_blocked`; the local fixture was restored to `verified` after the run.
+- Deeper action-level browser journeys for checkout, catalog mutation, and FlatWatch evidence/challenge writes remain unproven.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` inventories the current `aadhar-solana` Anchor instruction entrypoints for identity registry, verification oracle, credential manager, reputation engine, and staking manager.
 - `yarn install --frozen-lockfile` completes in `aadhar-solana` after network access is allowed, so Node/Yarn dependencies are now installed.
@@ -344,10 +348,13 @@ Proceed in this order:
 
 ### 7. Shared Trust Client And Drift Control
 
-- [~] Buyer, seller, FlatWatch, and the control plane all consume the AadhaarChain trust surface.
-- [!] Buyer and seller duplicate trust and SSO logic.
-- [ ] Extract common trust client logic into a shared package after the active contract stabilizes.
-- [ ] Extract or centralize shared SSO/session compatibility logic where appropriate.
+- [x] Buyer, seller, FlatWatch, and the control plane all consume the AadhaarChain trust surface.
+- [~] Buyer and seller duplicate trust and SSO logic.
+- [x] Extract common trust client logic into a shared package after the active contract stabilizes.
+  - [x] `shared/trust-client` owns trust surface types, trust snapshot fetching, trust-state metadata, and shared identity-session result types used by buyer and seller.
+- [~] Extract or centralize shared SSO/session compatibility logic where appropriate.
+  - [x] Buyer and seller import shared identity-session result types from `@portfolio/trust-client`.
+  - [ ] Buyer and seller still duplicate the axios identity-session compatibility client functions and interceptors.
 - [x] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
   - [x] Agent-control-plane read-only/full capability matrix covers all five trust states.
   - [x] Buyer trust fixture tests.
@@ -363,11 +370,16 @@ Proceed in this order:
 - [x] Document local service targets and browser acceptance workflow.
 - [x] Confirm local services respond when started.
 - [x] Seed or recreate a local AadhaarChain trust fixture for the active wallet.
-- [ ] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
-- [ ] Validate all trust states in browser-visible UX.
+- [~] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
+  - [x] Same connected wallet `C5svcE...g92YFF` is visible across the four app tabs.
+  - [x] Same-wallet trust-state propagation was validated in Chrome for the five documented states.
+  - [ ] Action-level journeys for checkout, catalog/config writes, and FlatWatch evidence/challenge writes remain open.
+- [x] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
-- [ ] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
-- [ ] Capture every blocker as product, runtime, browser, or dependency.
+- [x] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
+- [x] Capture every blocker as product, runtime, browser, or dependency.
+  - [x] FlatWatch backend startup was blocked by an older local SQLite schema missing `users.password_hash`; fixed with idempotent SQLite migrations.
+  - [x] Earlier Chrome/plugin/browser-use failures were separated from app health: `ERR_BLOCKED_BY_CLIENT` appeared while the browser path was unstable, and the later visible `ERR_CONNECTION_REFUSED` was caused by exited local dev listeners.
 
 ## Highest-Priority Risks
 
@@ -379,11 +391,10 @@ Proceed in this order:
 
 ## Current Blockers
 
-- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `scripts/browser/check-cdp-endpoint.sh` does not find the required Chrome Beta debug-profile DevTools endpoint on `127.0.0.1:9222`.
-- Current browser preflight evidence: `scripts/portfolio/acceptance-gate.sh --browser-only` fails in the browser preflight and reports `Google` PID `14024` listening on `127.0.0.1:9222`.
-- Current Chrome plugin evidence: the plugin can list and claim Chrome tabs, but the portfolio localhost tabs render `ERR_BLOCKED_BY_CLIENT`.
+- Chrome browser smoke is no longer blocked when the portfolio stack is kept alive: AadhaarChain, buyer, seller, and FlatWatch render through the Chrome plugin on ports `43100`, `43102`, `43103`, and `43105`.
+- Same-wallet trust-state browser acceptance has been executed through Chrome for all five trust states; action-level browser journeys are still open.
 - ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
 
-Run same-wallet browser acceptance once the local portfolio services and Chrome debug session are available.
+Run action-level browser journeys with the portfolio dev stack held open for the full Chrome session.
