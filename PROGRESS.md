@@ -70,8 +70,9 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm test` passes in `ondc-buyer` with 56 tests, including five-state buyer checkout trust fixture coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
-- `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
-- `npm run typecheck` passes in `ondc-seller`.
+- `npm test` passes in `ondc-seller` with 115 tests, including five-state seller catalog-write trust fixture coverage, seller trust snapshot fixtures, and trust-service-unavailable fail-closed hook behavior.
+- `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
+- `npm run lint` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 102 tests after production secret enforcement.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
@@ -142,7 +143,7 @@ Proceed in this order:
 
 - [~] Show AadhaarChain trust state in seller dashboard, catalog, config, orders, and agent surfaces.
 - [x] Inventory seller routes/actions and classify required trust state per action.
-- [ ] Add fixture tests for all five trust states and trust-service-unavailable behavior.
+- [x] Add fixture tests for all five trust states and trust-service-unavailable behavior.
 - [ ] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
 - [ ] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [ ] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
