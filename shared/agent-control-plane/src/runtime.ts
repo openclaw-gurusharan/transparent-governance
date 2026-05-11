@@ -254,12 +254,14 @@ export async function* streamAgentResponse(
     }
 
     const gatedFinalText = enforceAgentWriteTrustGate(appId, session.mode, finalText);
+    const writeGateTriggered = gatedFinalText !== finalText;
 
     yield {
       type: 'result',
       content: gatedFinalText,
       sdk_session_id: sdkSessionId,
       estimated_cost_usd: totalCostUsd || undefined,
+      write_gate_triggered: writeGateTriggered || undefined,
       timestamp: Date.now(),
     };
   } catch (error) {

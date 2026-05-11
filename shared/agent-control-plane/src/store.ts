@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promises as fs } from 'node:fs';
-import type { AppId, ControlPlaneStore, StoredSessionRecord, StoredUsageRecord, UsageSnapshot } from './contracts.js';
+import crypto from 'node:crypto';
+import type { AppId, ControlPlaneStore, StoredAuditEvent, StoredSessionRecord, StoredUsageRecord, UsageSnapshot } from './contracts.js';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = process.env.CONTROL_PLANE_DATA_DIR
@@ -19,7 +20,8 @@ const defaultPeriodEnd = () => {
 
 const DEFAULT_STORE: ControlPlaneStore = {
   usage: [],
-  sessions: []
+  sessions: [],
+  audit_events: [],
 };
 
 function normalizeUsageRecord(record: Partial<StoredUsageRecord> & { subject_id?: unknown; app_id?: unknown }): StoredUsageRecord | null {
@@ -46,8 +48,9 @@ function normalizeStore(raw: unknown): ControlPlaneStore {
     .map((record) => normalizeUsageRecord(record as Partial<StoredUsageRecord> & { subject_id?: unknown; app_id?: unknown }))
     .filter((record): record is StoredUsageRecord => record !== null);
   const sessions = Array.isArray(source.sessions) ? (source.sessions as StoredSessionRecord[]) : [];
+  const auditEvents = Array.isArray(source.audit_events) ? (source.audit_events as StoredAuditEvent[]) : [];
 
-  return { usage, sessions };
+  return { usage, sessions, audit_events: auditEvents };
 }
 
 function defaultUsageRecord(subjectId: string, appId: AppId): StoredUsageRecord {
@@ -148,5 +151,19 @@ export async function listSessionsForSubject(subjectId: string, appId: AppId): P
   return runStoreOperation(async () => {
     const store = await readStore();
     return store.sessions.filter((item) => item.subject_id === subjectId && item.app_id === appId);
+  });
+}
+
+export async function appendAuditEvent(event: Omit<StoredAuditEvent, 'audit_id' | 'timestamp'>): Promise<StoredAuditEvent> {
+  return runStoreOperation(async () => {
+    const store = await readStore();
+    const stored: StoredAuditEvent = {
+      audit_id: `audit-${crypto.randomUUID()}`,
+      timestamp: new Date().toISOString(),
+      ...event,
+    };
+    store.audit_events.push(stored);
+    await writeStore(store);
+    return stored;
   });
 }

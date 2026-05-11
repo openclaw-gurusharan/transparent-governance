@@ -63,7 +63,7 @@ Observed local portfolio service targets:
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
-- `npm test` passes in `shared/agent-control-plane` with 29 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, production local-CLI blocking, and buyer snapshot trust-state parsing.
+- `npm test` passes in `shared/agent-control-plane` with 30 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, production local-CLI blocking, buyer snapshot trust-state parsing, and capability audit event persistence.
 - `npm run typecheck` passes in `shared/agent-control-plane` after the runtime-origin guard.
 - `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
@@ -160,7 +160,7 @@ Proceed in this order:
 
 - [x] Downgrade non-verified trust states to read-only mode.
 - [x] Grant full mode only when trust is `verified`, runtime is available, and usage policy allows it.
-- [ ] Persist auditable grants and denials by app, subject, wallet, trust state, request, and timestamp.
+- [x] Persist auditable grants and denials by app, subject, wallet, trust state, request, and timestamp.
 - [x] Add deterministic fixture tests for all five trust states across buyer, seller, and FlatWatch agent sessions.
 - [x] Keep deployed agent runtime separated from public frontends and explicit about supported auth mode.
 
@@ -251,7 +251,7 @@ Proceed in this order:
 - [x] Downgrade a wallet to read-only when AadhaarChain reports no identity.
 - [~] Track app-specific read/write capabilities.
 - [x] Ensure all agent write actions are server-side gated by verified trust.
-- [ ] Add audit events for agent capability grants, denials, tool calls, and write attempts.
+- [x] Add audit events for agent capability grants, denials, tool calls, and write attempts.
 - [x] Add tests for read-only versus full mode across all trust states.
 
 ### 7. Shared Trust Client And Drift Control

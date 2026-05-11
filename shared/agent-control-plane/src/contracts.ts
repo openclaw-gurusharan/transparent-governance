@@ -11,6 +11,12 @@ export type PortfolioTrustState =
 
 export type SessionMode = 'blocked' | 'read_only' | 'full';
 
+export type AuditEventType =
+  | 'capability_grant'
+  | 'capability_denial'
+  | 'tool_call'
+  | 'write_attempt_blocked';
+
 export interface UsageSnapshot {
   requests_used: number;
   requests_limit: number;
@@ -61,7 +67,14 @@ export type AgentStreamEvent =
   | { type: 'assistant_delta'; content: string; timestamp: number }
   | { type: 'tool_call'; tool: string; status?: string; timestamp: number }
   | { type: 'tool_result'; tool: string; status?: string; content?: string; timestamp: number }
-  | { type: 'result'; content: string; timestamp: number; sdk_session_id?: string | null; estimated_cost_usd?: number }
+  | {
+      type: 'result';
+      content: string;
+      timestamp: number;
+      sdk_session_id?: string | null;
+      estimated_cost_usd?: number;
+      write_gate_triggered?: boolean;
+    }
   | { type: 'error'; error: string; timestamp: number }
   | { type: 'usage'; usage: UsageSnapshot; timestamp: number };
 
@@ -90,6 +103,22 @@ export interface StoredSessionRecord {
   updated_at: string;
 }
 
+export interface StoredAuditEvent {
+  audit_id: string;
+  timestamp: string;
+  event_type: AuditEventType;
+  app_id: AppId;
+  subject_id: string;
+  wallet_address: string | null;
+  session_id: string | null;
+  trust_state: PortfolioTrustState;
+  mode: SessionMode;
+  allowed_capabilities: string[];
+  outcome: 'granted' | 'denied' | 'observed' | 'blocked';
+  reason: string | null;
+  tool: string | null;
+}
+
 interface LegacyEntitlementRecord extends UsageSnapshot {
   subject_id: string;
   app_id: AppId;
@@ -98,5 +127,6 @@ interface LegacyEntitlementRecord extends UsageSnapshot {
 export interface ControlPlaneStore {
   usage: StoredUsageRecord[];
   sessions: StoredSessionRecord[];
+  audit_events: StoredAuditEvent[];
   entitlements?: LegacyEntitlementRecord[];
 }

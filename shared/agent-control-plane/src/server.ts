@@ -12,7 +12,7 @@ import type {
 } from './contracts.js';
 import { buildRuntimeSnapshot, recordUsage } from './entitlements.js';
 import { isCorsOriginAllowed } from './config.js';
-import { getSession, saveSession } from './store.js';
+import { appendAuditEvent, getSession, saveSession } from './store.js';
 import { fetchTrustSnapshot } from './trust.js';
 import { streamAgentResponse } from './runtime.js';
 
@@ -89,6 +89,42 @@ async function resolveRequestRuntime(appId: AppId, req: express.Request) {
   return { subjectId, walletAddress, trust, runtime };
 }
 
+async function recordCapabilityAudit({
+  appId,
+  subjectId,
+  walletAddress,
+  runtime,
+  sessionId = null,
+  eventType,
+  outcome,
+  reason,
+  tool = null,
+}: {
+  appId: AppId;
+  subjectId: string;
+  walletAddress: string | null;
+  runtime: AgentRuntimeSnapshot;
+  sessionId?: string | null;
+  eventType: 'capability_grant' | 'capability_denial' | 'tool_call' | 'write_attempt_blocked';
+  outcome: 'granted' | 'denied' | 'observed' | 'blocked';
+  reason: string | null;
+  tool?: string | null;
+}) {
+  await appendAuditEvent({
+    event_type: eventType,
+    app_id: appId,
+    subject_id: subjectId,
+    wallet_address: walletAddress,
+    session_id: sessionId,
+    trust_state: runtime.trust_state,
+    mode: runtime.mode,
+    allowed_capabilities: runtime.allowed_capabilities,
+    outcome,
+    reason,
+    tool,
+  });
+}
+
 async function createOrResumeSession(
   appId: AppId,
   req: express.Request,
@@ -96,6 +132,15 @@ async function createOrResumeSession(
 ) {
   const { subjectId, walletAddress, runtime } = await resolveRequestRuntime(appId, req);
   if (!runtime.agent_access) {
+    await recordCapabilityAudit({
+      appId,
+      subjectId,
+      walletAddress,
+      runtime,
+      eventType: 'capability_denial',
+      outcome: 'denied',
+      reason: runtime.blocked_reason || 'Claude Agent runtime is unavailable.',
+    });
     throw new HttpError(403, runtime.blocked_reason || 'Claude Agent runtime is unavailable.');
   }
 
@@ -129,6 +174,16 @@ async function createOrResumeSession(
   session.context = payload.context ?? {};
   session.updated_at = now;
   await saveSession(session);
+  await recordCapabilityAudit({
+    appId,
+    subjectId,
+    walletAddress,
+    runtime,
+    sessionId: session.session_id,
+    eventType: 'capability_grant',
+    outcome: 'granted',
+    reason: null,
+  });
 
   return {
     runtime,
@@ -184,6 +239,16 @@ async function sendAgentMessage(
   const trust = await fetchTrustSnapshot(walletAddress);
   const runtime = await buildRuntimeSnapshot(subjectId, appId, trust.state, trust.reason, req);
   if (!runtime.agent_access) {
+    await recordCapabilityAudit({
+      appId,
+      subjectId,
+      walletAddress,
+      runtime,
+      sessionId: session.session_id,
+      eventType: 'capability_denial',
+      outcome: 'denied',
+      reason: runtime.blocked_reason || 'Claude Agent runtime is unavailable.',
+    });
     throw new HttpError(403, runtime.blocked_reason || 'Claude Agent runtime is unavailable.');
   }
 
@@ -201,10 +266,35 @@ async function sendAgentMessage(
     let estimatedCostUsd = 0;
 
     for await (const event of streamAgentResponse(appId, session, payload.message, runtime)) {
+      if (event.type === 'tool_call') {
+        await recordCapabilityAudit({
+          appId,
+          subjectId,
+          walletAddress,
+          runtime,
+          sessionId: session.session_id,
+          eventType: 'tool_call',
+          outcome: 'observed',
+          reason: event.status ?? null,
+          tool: event.tool,
+        });
+      }
       if (event.type === 'result') {
         finalResult = event.content;
         latestSdkSessionId = event.sdk_session_id ?? latestSdkSessionId;
         estimatedCostUsd = event.estimated_cost_usd ?? estimatedCostUsd;
+        if (event.write_gate_triggered) {
+          await recordCapabilityAudit({
+            appId,
+            subjectId,
+            walletAddress,
+            runtime,
+            sessionId: session.session_id,
+            eventType: 'write_attempt_blocked',
+            outcome: 'blocked',
+            reason: 'Agent response attempted a write action that requires verified trust.',
+          });
+        }
       }
       yield event;
     }
