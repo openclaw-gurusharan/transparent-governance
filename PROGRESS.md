@@ -63,6 +63,12 @@ Observed local portfolio service targets:
 - Chrome plugin bridge check succeeded by listing open Chrome tabs, but claimed portfolio localhost tabs show `ERR_BLOCKED_BY_CLIENT`; browser acceptance remains blocked on Chrome profile access to the local app pages.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` inventories the current `aadhar-solana` Anchor instruction entrypoints for identity registry, verification oracle, credential manager, reputation engine, and staking manager.
+- `yarn install --frozen-lockfile` completes in `aadhar-solana` after network access is allowed, so Node/Yarn dependencies are now installed.
+- `aadhar-solana` now has adversarial Anchor test coverage for unauthorized identity verification updates, issuer impersonation during credential issuance, identity-derived credential transfer misuse, oracle double response, fee vault payment handling, and oracle slashing/deactivation.
+- `aadhar-solana` credential schema creation now rejects transferable identity-derived schemas for Aadhaar, PAN, bank-account, and address-proof credentials by default.
+- `git diff --check` passes in `aadhar-solana` after the adversarial test and credential policy edits.
+- `yarn anchor:build` passes in `aadhar-solana` after aligning Anchor/Solana dependencies and program IDs with the local SBF toolchain.
+- `yarn anchor:test` passes in `aadhar-solana` with 58 tests after adding the missing TypeScript test harness, upgradeable-loader metadata coverage, and running Anchor's local validator path with port-binding permission.
 - Seller payout/config local persistence now requires `verified` trust across all five trust fixture states; `ondc-seller` `npm run test`, `npm run typecheck`, and `npm run lint` pass.
 - AadhaarChain production mode downgrades deterministic fallback fraud or compliance evidence to manual review instead of approval.
 - AadhaarChain appends immutable local audit events for identity creation, verification requests, verification decisions, and downstream trust reads.
@@ -94,7 +100,7 @@ Observed local portfolio service targets:
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 - `python3 scripts/portfolio/check-portfolio-claims.py` still passes after FlatWatch README labels Razorpay/MyGate and OCR as POC/mock surfaces.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
-- `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
+- `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is present, `yarn anchor:build` passes, `yarn anchor:test` passes with 58 tests, PostgreSQL validates on `5432`, and Redis validates on `6379`.
 - `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the seller trust fixture and trust-service-unavailable coverage.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the buyer header trust-state fixture coverage.
@@ -106,7 +112,7 @@ Observed local portfolio service targets:
 - The current FastAPI AadhaarChain gateway is the running trust producer.
 - The cloned `aadhar-solana` repo is a larger backend candidate with Anchor programs, NestJS API, Prisma/Postgres, Redis, web, and mobile packages.
 - `aadhar-solana` ownership is resolved as the long-term Solana identity, credential, revocation, and reputation layer behind AadhaarChain trust decisions, not the current downstream trust producer.
-- `aadhar-solana` is not yet a running local backend in this workspace; Solana, PostgreSQL, Redis, and package dependencies remain runtime prerequisites.
+- `aadhar-solana` is not yet a persistently running local backend in this workspace, but PostgreSQL and Redis are installed, startable, and validated on their default local ports.
 - Current deployed shared-auth behavior is still compatibility stub territory; trust state and shared auth must stay separate.
 
 ## Checklist Operating Model
@@ -141,8 +147,16 @@ Proceed in this order:
 - [x] Decide and document the bridge role before any downstream app depends on it.
 - [x] Inventory identity registry, verification oracle, credential manager, reputation, and staking instructions.
 - [x] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
-- [ ] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
-- [ ] Add adversarial program tests before sensitive use.
+- [x] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
+  - [x] Node/Yarn dependencies are installed with `yarn install --frozen-lockfile`.
+  - [x] Anchor build passes with the installed Solana `build-sbf` toolchain.
+  - [x] Anchor tests pass with 58 validator-backed tests.
+  - [x] PostgreSQL accepts local connections on `5432` and returns `select 1 as ok`.
+  - [x] Redis accepts local connections on `6379` and returns `PONG`.
+- [x] Add adversarial program tests before sensitive use.
+  - [x] Added tests for unauthorized verification updates, issuer impersonation, credential transfer misuse, oracle double response, fee vault handling, and slashing/deactivation.
+  - [x] Added upgradeable-loader metadata coverage for every deployed program.
+  - [x] Anchor test execution is green with 58 passing tests.
 - [x] Define upgrade authority, multisig, oracle admission, emergency pause, issuer approval, and revocation authority policy.
 
 #### `ondc-buyer` — Buyer Trust Consumer
@@ -170,6 +184,7 @@ Proceed in this order:
   - [x] Buyer payment selection is carried into live checkout requests and persisted on local demo orders.
   - [x] Billing profile save failures now render inline before checkout proceeds.
   - [x] Deterministic buyer journey contract covers search, results, detail, cart, checkout, payment, confirmation, tracking, support, and agent routes.
+  - [!] `npm run verify:staging-journey` currently fails because `https://buyer-app-preprod-v2.ondc.org/api/{search,cart,orders}` returns `200 text/html` instead of JSON commerce API responses.
 
 #### `ondc-seller` — Seller Trust Consumer
 
@@ -239,17 +254,20 @@ Proceed in this order:
 - [x] Clone `aadhar-solana` into the workspace.
 - [x] Confirm it contains Anchor programs, NestJS API, Prisma schema, web, mobile, scripts, and tests.
 - [x] Confirm local tooling exists for Anchor, Solana CLI, Node, Yarn, `psql`, and `redis-cli`.
-- [!] `Anchor.toml` requests Anchor `0.30.1`, while the installed `anchor` reports `0.31.1`.
-- [!] Solana local validator is not currently verified on `8899`.
-- [!] PostgreSQL is not currently responding on `5432`.
-- [!] Redis is not currently running on `6379`.
-- [!] Node/Yarn dependencies are not installed for `aadhar-solana`.
+- [x] `Anchor.toml` now pins Anchor `0.31.1`, matching the installed `anchor-cli`, Solana `build-sbf` toolchain, program crates, API SDK, and README prerequisite.
+- [x] Solana local validator path is verified through `yarn anchor:test`.
+- [x] PostgreSQL is validated on `5432`.
+- [x] Redis is validated on `6379`.
+- [x] Node/Yarn dependencies are installed for `aadhar-solana`.
 - [x] Decide whether `aadhar-solana` is current trust producer, reference implementation, or migration target.
 - [x] Define the bridge from FastAPI AadhaarChain verification events to on-chain attestations.
 - [x] Define signer or oracle identity, attestation format, credential issuance, revocation propagation, retry semantics, and audit references.
-- [ ] Add or run Solana program tests for unauthorized verification updates, issuer impersonation, credential misuse, oracle double response, fee vault handling, slashing, and upgrade authority.
-- [ ] Make identity-derived credentials non-transferable by default unless a schema explicitly justifies transferability.
-- [ ] Define upgrade authority and governance before any sensitive dependency on deployed programs.
+- [x] Add or run Solana program tests for unauthorized verification updates, issuer impersonation, credential misuse, oracle double response, fee vault handling, slashing, and upgrade authority.
+  - [x] Added adversarial tests for unauthorized verification updates, issuer impersonation, credential transfer misuse, oracle double response, fee vault handling, and slashing/deactivation.
+  - [x] Added upgradeable-loader metadata coverage for every deployed program.
+  - [x] Anchor test execution passes with 58 tests.
+- [x] Make identity-derived credentials non-transferable by default unless a schema explicitly justifies transferability.
+- [x] Define upgrade authority and governance before any sensitive dependency on deployed programs.
 
 ### 3. ONDC Buyer
 
@@ -356,19 +374,15 @@ Proceed in this order:
 - [!] P1: Aadhaar/PAN evidence handling now has encrypted local storage, production key requirements, review/evidence-access audit controls, rate limits, and a formal threat model; deployed production still needs managed object storage, migration wiring, KMS rotation tests, and audit-stream monitoring.
 - [!] P1: FlatWatch now has production-safe auth, PostgreSQL schema support, file controls, audit viewer, pilot onboarding/export, signed ingestion, and OCR provider hooks; deployed pilot still needs live provider credentials and managed storage/backup wiring.
 - [!] P0: Buyer, seller, and FlatWatch protected actions need server-side trust enforcement.
-- [!] P1: `aadhar-solana` oracle governance and Solana program security need adversarial review.
+- [~] P1: `aadhar-solana` now has validator-backed adversarial coverage; independent audit and mainnet governance dry-run remain prudent before production reliance.
 - [!] P1: Duplicated buyer/seller trust and SSO code may drift.
 
 ## Current Blockers
 
-- `aadhar-solana` dependencies are not installed.
-- `aadhar-solana/Anchor.toml` pins Anchor `0.30.1`, but `anchor --version` reports `0.31.1`.
-- Solana local validator was not observed on `8899`.
-- PostgreSQL was not responding on `5432`.
-- Redis was not running on `6379`.
 - Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `scripts/browser/check-cdp-endpoint.sh` does not find the required Chrome Beta debug-profile DevTools endpoint on `127.0.0.1:9222`.
 - Current browser preflight evidence: `scripts/portfolio/acceptance-gate.sh --browser-only` fails in the browser preflight and reports `Google` PID `14024` listening on `127.0.0.1:9222`.
 - Current Chrome plugin evidence: the plugin can list and claim Chrome tabs, but the portfolio localhost tabs render `ERR_BLOCKED_BY_CLIENT`.
+- ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
 
