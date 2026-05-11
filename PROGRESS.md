@@ -122,7 +122,7 @@ Proceed in this order:
 - [x] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
 - [ ] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
 - [ ] Add adversarial program tests before sensitive use.
-- [ ] Define upgrade authority, multisig, oracle admission, emergency pause, issuer approval, and revocation authority policy.
+- [x] Define upgrade authority, multisig, oracle admission, emergency pause, issuer approval, and revocation authority policy.
 
 #### `ondc-buyer` — Buyer Trust Consumer
 

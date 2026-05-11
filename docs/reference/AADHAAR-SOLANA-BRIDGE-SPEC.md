@@ -125,6 +125,18 @@ Forbidden event payload data:
 - Signature verification must bind the full event payload.
 - The signer admission and rotation policy must be documented before devnet promotion.
 
+## Governance And Authority Policy
+
+Before `aadhar-solana` can enter any sensitive portfolio trust path:
+
+- Upgrade authority must be held by a documented multisig, not by a single developer wallet.
+- Program upgrade authority, oracle admission, issuer approval, revocation authority, staking slashing authority, and emergency pause authority must be separate named roles unless an ADR explicitly justifies combining them.
+- Oracle admission must require multisig approval plus a recorded operator identity, stake account, public key, and revocation path.
+- Issuer approval must bind issuer authority to schema scope, verification level, credential type, and revocation obligations.
+- Revocation authority must support emergency trust-block events and normal credential revocation events without exposing raw identity evidence.
+- Emergency pause must stop new identity, verification, credential, reputation, and staking writes while preserving read access to existing trust and revocation references.
+- Governance changes must emit audit references consumable by the FastAPI producer bridge before downstream apps rely on chain state.
+
 ## Credential Policy
 
 Identity-derived credentials are non-transferable by default.
