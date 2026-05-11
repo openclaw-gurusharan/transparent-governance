@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import sys
+import subprocess
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
+SELF_PATH = Path(__file__).resolve()
 
 
 REQUIRED_SNIPPETS = {
@@ -71,6 +73,93 @@ FORBIDDEN_SNIPPETS = {
     ],
 }
 
+SEMANTIC_FORBIDDEN_CLAIMS = {
+    "raw identity on-chain": [
+        "raw identity data on-chain",
+        "raw identity data is on-chain",
+        "raw aadhaar data on-chain",
+        "raw aadhaar data is on-chain",
+        "raw aadhaar is stored on-chain",
+        "raw aadhaar payloads on-chain",
+        "raw pan data on-chain",
+        "raw pan data is on-chain",
+        "store raw aadhaar on-chain",
+        "put raw aadhaar on-chain",
+    ],
+    "deployed shared auth before producer auth is real": [
+        "deployed shared auth broker: yes",
+        "shared_session_claims_allowed_in_public: true",
+        "deployed public shared auth is live",
+        "deployed shared login is live",
+        "production shared login is live",
+        "active wallet-backed sso is deployed",
+        "aadhaarchain is the deployed shared session broker",
+    ],
+    "mock integrations described as production-ready": [
+        "mock ocr is production-ready",
+        "mock ocr is production ready",
+        "filename-based ocr is production-ready",
+        "filename-based ocr is production ready",
+        "mock payment ingestion is production-ready",
+        "mock payment ingestion is production ready",
+        "mock razorpay is production-ready",
+        "mock razorpay is production ready",
+        "razorpay mock is production-ready",
+        "razorpay mock is production ready",
+    ],
+}
+
+TEXT_FILE_SUFFIXES = {
+    ".md",
+    ".mdx",
+    ".txt",
+    ".py",
+    ".sh",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".json",
+    ".yml",
+    ".yaml",
+}
+
+
+def tracked_text_files() -> list[Path]:
+    result = subprocess.run(
+        ["git", "ls-files"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    paths: list[Path] = []
+    for line in result.stdout.splitlines():
+        path = ROOT / line
+        if path == SELF_PATH or path.name == "PROGRESS.md":
+            continue
+        if path.suffix.lower() in TEXT_FILE_SUFFIXES and path.exists():
+            paths.append(path)
+    return paths
+
+
+def check_forbidden_semantic_claims(failures: list[str]) -> None:
+    for path in tracked_text_files():
+        try:
+            lines = path.read_text(errors="ignore").splitlines()
+        except OSError as exc:
+            failures.append(f"{path.relative_to(ROOT)} could not be read: {exc}")
+            continue
+
+        for line_number, line in enumerate(lines, start=1):
+            normalized = " ".join(line.lower().split())
+            for claim_type, snippets in SEMANTIC_FORBIDDEN_CLAIMS.items():
+                for snippet in snippets:
+                    if snippet in normalized:
+                        failures.append(
+                            f"{path.relative_to(ROOT)}:{line_number} contains unsupported {claim_type} claim: {snippet!r}"
+                        )
+
 
 def main() -> int:
     failures: list[str] = []
@@ -95,6 +184,8 @@ def main() -> int:
         for snippet in snippets:
             if snippet in text:
                 failures.append(f"{relative_path} contains forbidden claim: {snippet!r}")
+
+    check_forbidden_semantic_claims(failures)
 
     if failures:
         for failure in failures:

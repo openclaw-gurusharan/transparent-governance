@@ -75,6 +75,7 @@ Observed local portfolio service targets:
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
+- `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 
 ## Key Findings
 
@@ -261,7 +262,7 @@ Proceed in this order:
   - [x] Buyer trust fixture tests.
   - [x] Seller trust fixture tests.
   - [x] FlatWatch trust fixture tests.
-- [ ] Add semantic checks that prevent unsupported claims:
+- [x] Add semantic checks that prevent unsupported claims:
   - raw identity data on-chain
   - deployed shared auth before producer auth is real
   - mock OCR/payment integrations described as production-ready
