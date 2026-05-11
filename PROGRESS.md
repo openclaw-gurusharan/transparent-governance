@@ -76,7 +76,7 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
-- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 111 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, and signed payment webhook/idempotency coverage.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 112 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, signed payment webhook/idempotency coverage, and OCR provenance/manual-review coverage.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
@@ -172,7 +172,9 @@ Proceed in this order:
 - [~] Replace mock payment ingestion with signed webhook verification, idempotency, reconciliation, retry, and source references.
   - [x] Signed Razorpay-style webhook path verifies HMAC signatures, requires idempotency keys, and stores immutable raw source payload references.
   - [ ] Real provider integration, reconciliation jobs, duplicate matching beyond idempotency key, retry, and sync status tracking remain open.
-- [ ] Replace filename/mock OCR with real extraction, confidence, matching, mismatch, manual review, and audit trail.
+- [~] Replace filename/mock OCR with real extraction, confidence, matching, mismatch, manual review, and audit trail.
+  - [x] Mock OCR responses include extraction method, source hash, match score, and manual-review requirement so fallback evidence cannot look production-grade.
+  - [ ] Real OCR integration, extracted-field confidence by field, reviewer outcome, and durable extraction audit trail remain open.
 - [ ] Enforce evidence/challenge/admin/agent write permissions server-side and audit every sensitive action.
 
 #### `shared/agent-control-plane` — Capability Broker
@@ -263,7 +265,9 @@ Proceed in this order:
 - [~] Implement real payment ingestion with webhook signature verification, idempotency, reconciliation, and immutable source payload references.
   - [x] Webhook signature verification, idempotency, and raw source payload reference storage are implemented.
   - [ ] Real Razorpay/MyGate integration, reconciliation, retry, and sync status tracking remain open.
-- [ ] Implement real OCR and receipt matching with extracted fields, confidence, source hash, matching rule, and reviewer outcome.
+- [~] Implement real OCR and receipt matching with extracted fields, confidence, source hash, matching rule, and reviewer outcome.
+  - [x] Mock OCR now emits source hash, extraction method, match score, and manual-review requirement.
+  - [ ] Real OCR extraction, matching rule persistence, reviewer outcome, and durable extraction audit trail remain open.
 - [~] Add upload limits, MIME allowlist, malware scanning, private object storage, signed downloads, and retention/deletion policy.
   - [x] Upload limits and MIME/extension allowlist are enforced in the backend.
   - [ ] Malware scanning, private object storage, signed downloads, retention, and deletion policy remain open.
