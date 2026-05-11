@@ -71,7 +71,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-buyer` with 73 tests, including five-state buyer checkout trust fixture coverage, header trust-state rendering coverage, and commerce demo-mode URL/fallback coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
 - `npm run lint` passes in `ondc-buyer`.
-- `npm test` passes in `ondc-seller` with 115 tests, including five-state seller catalog-write trust fixture coverage, seller trust snapshot fixtures, and trust-service-unavailable fail-closed hook behavior.
+- `npm test` passes in `ondc-seller` with 120 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, and trust-service-unavailable fail-closed hook behavior.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
@@ -153,7 +153,9 @@ Proceed in this order:
 - [ ] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
 - [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [ ] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
-- [ ] Make seller agent writes require verified trust plus auditable approval.
+- [~] Make seller agent writes require verified trust plus auditable approval.
+  - [x] Seller agent catalog patches and order follow-up notes require verified trust and record applied or blocked audit events.
+  - [ ] Add explicit approval flow before agent-originated seller writes execute.
 
 #### `flatwatch` — Transparency And Audit Consumer
 
