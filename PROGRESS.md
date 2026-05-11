@@ -68,7 +68,7 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `shared/agent-control-plane` after the runtime-origin guard.
 - `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
-- `npm test` passes in `ondc-buyer` with 69 tests, including five-state buyer checkout trust fixture coverage and header trust-state rendering coverage.
+- `npm test` passes in `ondc-buyer` with 73 tests, including five-state buyer checkout trust fixture coverage, header trust-state rendering coverage, and commerce demo-mode URL/fallback coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
 - `npm run lint` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 115 tests, including five-state seller catalog-write trust fixture coverage, seller trust snapshot fixtures, and trust-service-unavailable fail-closed hook behavior.
@@ -138,9 +138,11 @@ Proceed in this order:
   - [x] Agent checkout routing is gated across all five trust states.
   - [x] Profile/header trust-state rendering has fixture coverage.
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
-- [ ] Keep trust display informational; do not make frontend trust state the enforcement boundary.
+- [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
+  - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
-- [ ] Complete the end-to-end buyer journey with recoverable cart/order state and clear API error handling.
+- [~] Complete the end-to-end buyer journey with recoverable cart/order state and clear API error handling.
+  - [x] Live checkout failures fall back to local quotes only when commerce demo mode is active.
 
 #### `ondc-seller` — Seller Trust Consumer
 
