@@ -77,7 +77,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
-- `ondc-seller` now has a centralized seller action policy, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 138 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
+- `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 140 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
 - `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
@@ -154,7 +154,8 @@ Proceed in this order:
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
   - [x] Buyer local checkout, cancellation/refund, and support/dispute mutation helpers require verified trust across all five fixture states.
   - [x] Live buyer checkout, cancellation/refund, support/dispute, and agent-write request paths now attach a backend trust-policy envelope requiring server trust revalidation for protected actions.
-  - [ ] True backend enforcement for protected buyer actions remains required before production use.
+  - [x] Netlify-hosted checkout, cancellation/refund, support/dispute, and agent-write API routes now revalidate AadhaarChain trust server-side before proxying protected writes.
+  - [ ] Payment-method and account-recovery backend routes are not present in this buyer app; enforce them when those backend surfaces exist.
 - [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
   - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
@@ -171,7 +172,7 @@ Proceed in this order:
 - [~] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
   - [x] Seller order accept/reject/dispatch UI mutation paths require verified trust before demo or live API mutation.
   - [x] Seller payout/config local mutation paths require verified trust before local persistence or generated key mutation.
-  - [x] Seller catalog, order, config, and agent write paths share one action policy and emit trust/session headers for commerce API enforcement boundaries.
+  - [x] Seller catalog, order, config, and agent write paths share one action policy and attach a backend trust-policy envelope requiring server trust revalidation for protected actions.
   - [ ] True backend enforcement is still required before production use.
 - [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [x] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
@@ -265,7 +266,7 @@ Proceed in this order:
   - agent write actions
 - [~] Add backend trust enforcement for seller actions.
   - [x] Centralized seller action policy covers catalog, order, config, and agent writes.
-  - [x] Sensitive commerce API calls include trust, wallet, subject, and session context headers and audit local/demo outcomes.
+  - [x] Sensitive commerce API calls include a typed backend trust-policy envelope, trust/wallet/subject/session/audit headers, and local/demo audit outcomes.
   - [ ] Production commerce API must independently validate session, wallet identity, AadhaarChain trust state, policy, and audit writes server-side.
 - [x] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
 - [x] Add integration tests for all AadhaarChain trust fixture states.
