@@ -213,7 +213,7 @@ Proceed in this order:
 - [~] Keep frontend trust UX aligned with portfolio trust states.
 - [x] Define exactly which buyer actions require verified trust.
 - [ ] Add server-side enforcement for protected buyer actions; frontend trust display must not be the enforcement boundary.
-- [ ] Add integration tests for all AadhaarChain trust fixture states.
+- [x] Add integration tests for all AadhaarChain trust fixture states.
 - [x] Reconcile README/backend claims with actual package dependencies and backend availability.
 - [x] Normalize identity URL and trust URL handling across the buyer app.
 
