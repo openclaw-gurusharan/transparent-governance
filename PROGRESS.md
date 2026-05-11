@@ -65,6 +65,8 @@ Observed local portfolio service targets:
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 - `npm test` passes in `shared/agent-control-plane` with 19 assertions across buyer, seller, FlatWatch, all five trust states, and the runtime-auth blocked path.
 - `npm run typecheck` passes in `shared/agent-control-plane`.
+- `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
+- `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm test` passes in `ondc-buyer` with 56 tests, including five-state buyer checkout trust fixture coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
@@ -117,7 +119,10 @@ Proceed in this order:
 
 - [~] Show AadhaarChain trust state in the buyer experience.
 - [x] Inventory buyer actions and classify them as public, authenticated, trust-aware, or high-trust.
-- [ ] Add fixture tests for all five trust states across profile, checkout, and agent surfaces.
+- [~] Add fixture tests for all five trust states across profile, checkout, and agent surfaces.
+  - [x] Trust snapshot mapping covers missing identity plus the identity-present fixture states.
+  - [x] Agent checkout routing is gated across all five trust states.
+  - [ ] Profile/header trust-state rendering still needs fixture coverage.
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
 - [ ] Keep trust display informational; do not make frontend trust state the enforcement boundary.
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
