@@ -72,6 +72,9 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
 - `npm run typecheck` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
+- `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
+- `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
+- The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
 
 ## Key Findings
 
@@ -222,6 +225,7 @@ Proceed in this order:
 - [x] Maintain a full-stack transparency app with frontend, backend, database, transactions, receipts, chat, challenges, notifications, and control-plane routes.
 - [x] Integrate AadhaarChain trust lookup for agent/runtime gating.
 - [x] Fail closed to `no_identity` when wallet or trust service is unavailable.
+- [x] Cover frontend trust snapshot behavior with deterministic AadhaarChain trust-state fixtures.
 - [~] Keep RBAC concepts for resident, admin, and super admin.
 - [!] Demo auth remains unsafe for real users.
 - [!] Hardcoded/default development secrets must not be accepted in production.
