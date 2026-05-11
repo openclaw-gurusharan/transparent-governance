@@ -32,6 +32,30 @@ export interface TrustSnapshot {
   trust: TrustSurface | null;
 }
 
+export type IdentityProofAudience = 'buyer' | 'seller' | 'flatwatch';
+
+export interface IdentityProofToken {
+  token_id: string;
+  wallet_address: string;
+  audience: IdentityProofAudience;
+  purpose: string;
+  trust_state: PortfolioTrustState;
+  high_trust_eligible: boolean;
+  issued_at: string;
+  expires_at: string;
+  message: string;
+}
+
+export interface SignedIdentityProofResult {
+  valid: boolean;
+  wallet_address: string;
+  audience: IdentityProofAudience;
+  trust_state?: PortfolioTrustState | null;
+  high_trust_eligible: boolean;
+  reason: string;
+  verified_at: string;
+}
+
 export interface SSOUser {
   wallet_address: string;
   pda_address?: string;
@@ -97,6 +121,47 @@ async function fetchJson<T>(url: string, fetchImpl: typeof fetch): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function postJson<T>(url: string, fetchImpl: typeof fetch, body: unknown): Promise<T> {
+  const response = await fetchImpl(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    throw new Error(`Trust API request failed: ${response.status}`);
+  }
+  return response.json() as Promise<T>;
+}
+
+export function encodeBase58(bytes: Uint8Array): string {
+  const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  const digits = [0];
+
+  for (const byte of bytes) {
+    let carry = byte;
+    for (let index = 0; index < digits.length; index += 1) {
+      carry += digits[index] << 8;
+      digits[index] = carry % 58;
+      carry = Math.floor(carry / 58);
+    }
+    while (carry > 0) {
+      digits.push(carry % 58);
+      carry = Math.floor(carry / 58);
+    }
+  }
+
+  let encoded = '';
+  for (const byte of bytes) {
+    if (byte !== 0) break;
+    encoded += alphabet[0];
+  }
+  for (let index = digits.length - 1; index >= 0; index -= 1) {
+    encoded += alphabet[digits[index]];
+  }
+  return encoded;
+}
+
 export function createTrustClient({ trustApiUrl, fetchImpl }: TrustClientOptions) {
   const baseUrl = trustApiUrl.replace(/\/+$/, '');
 
@@ -138,6 +203,42 @@ export function createTrustClient({ trustApiUrl, fetchImpl }: TrustClientOptions
         reason: trust.state_reason ?? null,
         trust,
       };
+    },
+
+    async issueIdentityProofToken(
+      walletAddress: string,
+      audience: IdentityProofAudience,
+      purpose = 'portfolio_identity_proof',
+    ): Promise<IdentityProofToken> {
+      const currentFetch = fetchImpl ?? fetch;
+      const response = await postJson<{ data: IdentityProofToken }>(
+        `${baseUrl}/api/identity/${walletAddress}/proof-token`,
+        currentFetch,
+        { audience, purpose },
+      );
+      return response.data;
+    },
+
+    async verifySignedIdentityProof(input: {
+      tokenId: string;
+      walletAddress: string;
+      audience: IdentityProofAudience;
+      message: string;
+      signature: string;
+    }): Promise<SignedIdentityProofResult> {
+      const currentFetch = fetchImpl ?? fetch;
+      const response = await postJson<{ data: SignedIdentityProofResult }>(
+        `${baseUrl}/api/identity/proof-token/verify`,
+        currentFetch,
+        {
+          token_id: input.tokenId,
+          wallet_address: input.walletAddress,
+          audience: input.audience,
+          message: input.message,
+          signature: input.signature,
+        },
+      );
+      return response.data;
     },
   };
 }

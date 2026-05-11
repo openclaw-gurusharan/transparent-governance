@@ -84,15 +84,21 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm test` passes in `ondc-buyer` with 76 tests, including five-state buyer checkout trust fixture coverage, protected local buyer-action trust gating, header trust-state rendering coverage, and commerce demo-mode URL/fallback coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
+- `ondc-buyer` now exposes a buyer-specific wallet proof control for `buyer_checkout_identity_proof`; `npm run typecheck` passes after wiring it to the shared AadhaarChain proof contract.
+- Chrome validation in the signed wallet profile produced `Identity signed` for buyer proof with wallet `C5svcE...g92YFF`.
 - `npm run lint` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
+- `ondc-seller` now exposes a seller-specific wallet proof control for `seller_catalog_identity_proof`; `npm run typecheck` passes after wiring it to the shared AadhaarChain proof contract.
+- Chrome validation in the signed wallet profile produced `Identity signed` for seller proof with wallet `C5svcE...g92YFF`.
 - `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, Vercel/Netlify `/api/*` enforcement gateways, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 150 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
 - `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
 - `python3 scripts/portfolio/check-trust-consumer-contract.py` passes after the AadhaarChain trust-surface changes and confirms the downstream contract still redacts forbidden raw evidence and PII keys.
+- AadhaarChain now issues short-lived, audience-bound identity proof challenges only for verified wallet identities; `gateway/tests/test_routes.py` covers real Solana keypair signing, unverified-trust rejection, and tampered-message rejection.
+- `shared/trust-client` now exposes the identity proof challenge/verification contract, including base58 encoding for wallet message signatures.
 - AadhaarChain lane implementation is committed in the child repo at `2e1424e`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 117 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, signed payment webhook/idempotency coverage, OCR provenance/manual-review coverage, challenge write audit coverage, and admin-only audit review API coverage.
@@ -380,10 +386,16 @@ Proceed in this order:
     - [ ] FlatWatch receipt upload was blocked by Chrome plugin file chooser timeout on the hidden file input.
     - [ ] Seller config action was blocked by Chrome reporting another extension UI open on the page.
   - [x] Signed Solana transaction journey is reachable and browser-validated from AadhaarChain.
-    - [x] Code search found no `signTransaction`, `sendTransaction`, or `signMessage` usage in the active AadhaarChain, buyer, seller, or FlatWatch frontends.
+    - [x] Earlier code search found no `signTransaction`, `sendTransaction`, or `signMessage` usage in the active AadhaarChain, buyer, seller, or FlatWatch frontends; AadhaarChain, buyer, and seller now intentionally expose signing checkpoints for transaction or identity proof validation.
     - [x] `aadhar-solana` has Anchor transaction coverage in tests, but `PLAN.md` still treats it as a bridge/migration target rather than the active browser trust producer.
     - [x] AadhaarChain dashboard now exposes a transaction signing checkpoint that asks the connected wallet to sign a 0-lamport devnet self-transfer and does not submit it.
     - [x] Chrome validation produced `Transaction signed` for wallet `C5svcE...g92YFF` with a local transaction signature prefix.
+  - [~] Purpose-bound identity proof signing is implemented and unit/type checked; Chrome wallet approval for buyer and seller proof signing is still pending.
+    - [x] AadhaarChain gateway issues five-minute proof challenges only when the wallet trust state is `verified`.
+    - [x] AadhaarChain gateway verifies the wallet signature against the exact issued message, wallet, audience, and expiry.
+    - [x] Buyer app exposes a `buyer_checkout_identity_proof` signing control.
+    - [x] Seller app exposes a `seller_catalog_identity_proof` signing control.
+    - [x] Chrome wallet signing validation approved buyer and seller proof signatures through the connected signed wallet profile.
 - [x] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
 - [x] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
@@ -405,8 +417,9 @@ Proceed in this order:
 - Same-wallet trust-state browser acceptance has been executed through Chrome for all five trust states; action-level browser journeys are still open.
 - Action-level browser pass now has partial evidence: seller catalog add works under verified trust; FlatWatch challenge form opens under verified trust; buyer checkout, FlatWatch receipt upload, and seller config need a cleaner Chrome interaction path.
 - Signed wallet transaction testing is no longer blocked for AadhaarChain: the dashboard signing checkpoint was approved in Chrome and returned a local transaction signature without submitting the transaction.
+- Identity proof signing is implemented and Chrome-validated for the buyer and seller use case with app-specific signed proof controls.
 - ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
 
-Rerun the remaining action-level browser journeys with the portfolio dev stack held open for the full Chrome session.
+Rerun the remaining action-level browser journeys with the portfolio dev stack held open for the full Chrome session, starting with buyer and seller identity proof signing because that is now the canonical step-up flow for proving owner-controlled identity across apps.
