@@ -266,6 +266,7 @@ Proceed in this order:
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
 - The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
+- Browser acceptance is currently blocked because local probes to `127.0.0.1:43101`, `43102`, `43103`, and Chrome debug endpoint `127.0.0.1:9222` failed.
 
 ## Next Checkpoint
 
