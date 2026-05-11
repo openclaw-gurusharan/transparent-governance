@@ -373,7 +373,12 @@ Proceed in this order:
 - [~] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
   - [x] Same connected wallet `C5svcE...g92YFF` is visible across the four app tabs.
   - [x] Same-wallet trust-state propagation was validated in Chrome for the five documented states.
-  - [ ] Action-level journeys for checkout, catalog/config writes, and FlatWatch evidence/challenge writes remain open.
+  - [~] Action-level journeys for checkout, catalog/config writes, and FlatWatch evidence/challenge writes remain open.
+    - [x] Seller verified-trust catalog write succeeded in Chrome by adding `Codex Smoke Product` through the catalog form.
+    - [x] FlatWatch verified-trust challenge form opens in Chrome and exposes an enabled trust context; submit remains disabled until a transaction and reason are selected.
+    - [ ] Buyer checkout form entry was blocked by Chrome plugin input-control detach/fill issues after verified-state checkout controls rendered.
+    - [ ] FlatWatch receipt upload was blocked by Chrome plugin file chooser timeout on the hidden file input.
+    - [ ] Seller config action was blocked by Chrome reporting another extension UI open on the page.
 - [x] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
 - [x] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
@@ -393,6 +398,7 @@ Proceed in this order:
 
 - Chrome browser smoke is no longer blocked when the portfolio stack is kept alive: AadhaarChain, buyer, seller, and FlatWatch render through the Chrome plugin on ports `43100`, `43102`, `43103`, and `43105`.
 - Same-wallet trust-state browser acceptance has been executed through Chrome for all five trust states; action-level browser journeys are still open.
+- Action-level browser pass now has partial evidence: seller catalog add works under verified trust; FlatWatch challenge form opens under verified trust; buyer checkout, FlatWatch receipt upload, and seller config need a cleaner Chrome interaction path.
 - ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
