@@ -3,7 +3,7 @@ import type { PortfolioTrustState } from './contracts.js';
 const TRUST_API_URL = process.env.TRUST_API_URL || 'http://127.0.0.1:43101';
 
 interface TrustSurface {
-  trust_state: Exclude<PortfolioTrustState, 'no_identity'>;
+  trust_state: PortfolioTrustState;
   high_trust_eligible: boolean;
   state_reason?: string | null;
 }

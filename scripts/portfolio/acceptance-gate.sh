@@ -96,6 +96,13 @@ if [ "$RUN_DETERMINISTIC" -eq 1 ]; then
     /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_routes.py -q
   "
 
+  run_step "portfolio trust consumer contract check" /bin/zsh -lc "
+    cd '$ROOT'
+    PYTHONPATH=\"\$PWD/aadhaar-chain/gateway:\$PWD/aadhaar-chain/gateway/venv/lib/python3.12/site-packages\${PYTHONPATH:+:\$PYTHONPATH}\" \
+    PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+    /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 scripts/portfolio/check-trust-consumer-contract.py
+  "
+
   run_step "ondc-buyer checks" /bin/zsh -lc "
     cd '$ROOT/ondc-buyer'
     npm run lint
@@ -114,7 +121,8 @@ if [ "$RUN_DETERMINISTIC" -eq 1 ]; then
 
   run_step "flatwatch backend tests" /bin/zsh -lc "
     cd '$ROOT/flatwatch/backend'
-    python3 -m pytest -q
+    PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+    python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto
   "
 
   run_step "flatwatch frontend checks" /bin/zsh -lc "
