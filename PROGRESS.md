@@ -110,6 +110,7 @@ Observed local portfolio service targets:
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 41 tests, ESLint, and `next build`.
 - Chrome validation in the signed wallet profile renders FlatWatch's agent surface at `/chat` with wallet `C5svcE...g92YFF`, runtime `local_cli`, and verified write path enabled; `/agent` correctly is not a FlatWatch route.
+- App README files have been refreshed for `aadhaar-chain`, `aadhar-solana`, `ondc-buyer`, `ondc-seller`, and `flatwatch` to reflect current portfolio roles, trust boundaries, local commands, verified evidence, and open production gaps.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 - `python3 scripts/portfolio/check-portfolio-claims.py` still passes after FlatWatch README labels Razorpay/MyGate and OCR as POC/mock surfaces.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
