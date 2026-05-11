@@ -86,12 +86,14 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-buyer`.
 - `ondc-buyer` now exposes a buyer-specific wallet proof control for `buyer_checkout_identity_proof`; `npm run typecheck` passes after wiring it to the shared AadhaarChain proof contract.
 - Chrome validation in the signed wallet profile produced `Identity signed` for buyer proof with wallet `C5svcE...g92YFF`.
+- Chrome validation in the signed wallet profile renders the buyer agent page at `/agent` with wallet `C5svcE...g92YFF`, runtime `local_cli`, and high-trust write access enabled; prior buyer agent messages and structured recommendations are visible.
 - `npm run lint` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
 - `ondc-seller` now exposes a seller-specific wallet proof control for `seller_catalog_identity_proof`; `npm run typecheck` passes after wiring it to the shared AadhaarChain proof contract.
 - Chrome validation in the signed wallet profile produced `Identity signed` for seller proof with wallet `C5svcE...g92YFF`.
+- Chrome validation in the signed wallet profile renders the seller agent page at `/agent` with wallet `C5svcE...g92YFF`, runtime `local_cli`, and verified seller writes enabled.
 - `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, Vercel/Netlify `/api/*` enforcement gateways, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 150 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
 - `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
@@ -107,6 +109,7 @@ Observed local portfolio service targets:
 - `npm test -- --runInBand`, `npm run lint`, and `npm run build` pass in `flatwatch/frontend` after adding the admin audit viewer and audit API client coverage.
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 41 tests, ESLint, and `next build`.
+- Chrome validation in the signed wallet profile renders FlatWatch's agent surface at `/chat` with wallet `C5svcE...g92YFF`, runtime `local_cli`, and verified write path enabled; `/agent` correctly is not a FlatWatch route.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
 - `python3 scripts/portfolio/check-portfolio-claims.py` still passes after FlatWatch README labels Razorpay/MyGate and OCR as POC/mock surfaces.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
@@ -418,6 +421,7 @@ Proceed in this order:
 - Action-level browser pass now has partial evidence: seller catalog add works under verified trust; FlatWatch challenge form opens under verified trust; buyer checkout, FlatWatch receipt upload, and seller config need a cleaner Chrome interaction path.
 - Signed wallet transaction testing is no longer blocked for AadhaarChain: the dashboard signing checkpoint was approved in Chrome and returned a local transaction signature without submitting the transaction.
 - Identity proof signing is implemented and Chrome-validated for the buyer and seller use case with app-specific signed proof controls.
+- Agent-page browser validation now covers buyer `/agent`, seller `/agent`, and FlatWatch `/chat`; Chrome text-entry submission for new seller/FlatWatch prompts is still blocked by the Chrome plugin textarea/clipboard path.
 - ONDC Buyer staging journey proof is blocked because `npm run verify:staging-journey` reaches the configured preprod origin, but search, cart, and orders API paths return `200 text/html` instead of JSON commerce API responses.
 
 ## Next Checkpoint
