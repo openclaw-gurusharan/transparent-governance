@@ -65,6 +65,10 @@ Observed local portfolio service targets:
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 - `npm test` passes in `shared/agent-control-plane` with 19 assertions across buyer, seller, FlatWatch, all five trust states, and the runtime-auth blocked path.
 - `npm run typecheck` passes in `shared/agent-control-plane`.
+- `npm test` passes in `ondc-buyer` with 56 tests, including five-state buyer checkout trust fixture coverage.
+- `npm run typecheck` passes in `ondc-buyer`.
+- `npm test` passes in `ondc-seller` with 108 tests, including five-state seller catalog-write trust fixture coverage.
+- `npm run typecheck` passes in `ondc-seller`.
 
 ## Key Findings
 
@@ -244,8 +248,8 @@ Proceed in this order:
 - [ ] Extract or centralize shared SSO/session compatibility logic where appropriate.
 - [~] Add deterministic trust fixture tests across buyer, seller, FlatWatch, and agent-control-plane.
   - [x] Agent-control-plane read-only/full capability matrix covers all five trust states.
-  - [ ] Buyer trust fixture tests.
-  - [ ] Seller trust fixture tests.
+  - [x] Buyer trust fixture tests.
+  - [x] Seller trust fixture tests.
   - [ ] FlatWatch trust fixture tests.
 - [ ] Add semantic checks that prevent unsupported claims:
   - raw identity data on-chain
