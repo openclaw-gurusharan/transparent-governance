@@ -55,7 +55,7 @@ Observed local portfolio service targets:
 - `python3 scripts/portfolio/check-trust-consumer-contract.py` passes and verifies all five documented trust states against the live FastAPI test client.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_routes.py -q` passes in `aadhaar-chain/gateway` with 8 tests.
 - `python3 scripts/portfolio/check-auth-composition.py` passes after buyer, seller, and FlatWatch auth-composition markers; FlatWatch remains explicitly app-local auth.
-- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the seller config trust gate, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the buyer protected-action trust gate, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
 - Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
@@ -69,7 +69,7 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `shared/agent-control-plane` after the runtime-origin guard.
 - `npm run test -- src/lib/trust.test.ts src/lib/agentBuyerState.test.ts` passes in `ondc-buyer` with 13 assertions covering AadhaarChain trust snapshots and buyer agent checkout gating.
 - `npm run typecheck` passes in `ondc-buyer` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
-- `npm test` passes in `ondc-buyer` with 73 tests, including five-state buyer checkout trust fixture coverage, header trust-state rendering coverage, and commerce demo-mode URL/fallback coverage.
+- `npm test` passes in `ondc-buyer` with 76 tests, including five-state buyer checkout trust fixture coverage, protected local buyer-action trust gating, header trust-state rendering coverage, and commerce demo-mode URL/fallback coverage.
 - `npm run typecheck` passes in `ondc-buyer`.
 - `npm run lint` passes in `ondc-buyer`.
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
@@ -144,6 +144,8 @@ Proceed in this order:
   - [x] Agent checkout routing is gated across all five trust states.
   - [x] Profile/header trust-state rendering has fixture coverage.
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
+  - [x] Buyer local checkout, cancellation/refund, and support/dispute mutation helpers require verified trust across all five fixture states.
+  - [ ] True backend enforcement for protected buyer actions remains required before production use.
 - [x] Keep trust display informational; do not make frontend trust state the enforcement boundary.
   - [x] Buyer local quote/order fallback is demo-only; protected production checkout still requires commerce backend policy.
 - [ ] Move shared trust and compatibility-session helpers into a shared package once the contract stabilizes.
