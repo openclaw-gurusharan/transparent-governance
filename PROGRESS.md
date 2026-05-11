@@ -75,6 +75,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 117 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, signed payment webhook/idempotency coverage, OCR provenance/manual-review coverage, challenge write audit coverage, and admin-only audit review API coverage.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
@@ -117,7 +118,9 @@ Proceed in this order:
 - [x] Expose `GET /api/identity/{wallet_address}/trust` as the downstream-safe contract.
 - [x] Support deterministic fixture states: `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, `revoked_or_blocked`.
 - [x] Add schema/sample-response coverage for every `trust_version: v1` state.
-- [ ] Replace local file or runtime trust state with production-grade persistent storage.
+- [~] Replace local file or runtime trust state with production-grade persistent storage.
+  - [x] Production startup is blocked when the gateway would use the local JSON trust store; the PostgreSQL trust store remains unimplemented.
+  - [ ] Implement PostgreSQL-backed identity, verification, consent, review, audit, revocation, and attestation persistence.
 - [ ] Implement first-class operator review with reviewer identity, evidence access controls, decision records, and audit receipts.
 - [ ] Add secure evidence storage, retention, deletion, encryption, key rotation, and evidence-access audit controls.
 - [x] Keep raw Aadhaar, PAN, OCR output, document bytes, and fraud/compliance internals out of downstream responses.
@@ -197,7 +200,9 @@ Proceed in this order:
 - [x] Expose `GET /api/identity/{wallet_address}`, `GET /api/identity/{wallet_address}/trust`, and `GET /api/identity/status/{verification_id}` from the active FastAPI gateway.
 - [~] Keep agent-assisted verification provenance modeled in code.
 - [x] Lock the `/trust` OpenAPI schema as the stable downstream contract.
-- [ ] Move identity, verification, consent, review, and audit records into durable production persistence.
+- [~] Move identity, verification, consent, review, and audit records into durable production persistence.
+  - [x] Production mode cannot start on the local JSON trust store.
+  - [ ] Durable PostgreSQL persistence remains open.
 - [ ] Add production mode that cannot approve from fallback-only verification evidence.
 - [ ] Add operator review queues, reviewer identity, evidence access controls, final decisions, and appeal or correction handling.
 - [ ] Add immutable audit events for identity creation, verification, consent, revocation, review, and downstream trust reads.
