@@ -27,6 +27,18 @@ Repo evidence from `aadhar-solana`:
 
 This does not match the active portfolio trust boundary because downstream consumers may only receive safe trust state, consent summaries, attestation references, revocation references, and audit references. Raw Aadhaar, PAN, OCR output, extracted PII, and internal verifier payloads must stay inside `aadhaar-chain`.
 
+## Anchor Instruction Inventory
+
+Current instruction entrypoints in `aadhar-solana/programs/*/src/lib.rs`:
+
+| Program | Instructions | Portfolio use before promotion |
+| --- | --- | --- |
+| `identity-registry` | `initialize_config`, `create_identity`, `update_verification_status`, `update_reputation`, `update_staked_amount`, `add_recovery_key`, `recover_identity` | Identity anchor and trust-bit registry behind the FastAPI producer. Must not expose raw identity evidence downstream. |
+| `verification-oracle` | `initialize`, `register_oracle`, `deregister_oracle`, `request_verification`, `submit_verification`, `finalize_verification`, `expire_verification`, `slash_oracle`, `update_config` | Candidate signed bridge/oracle lane. Requires signer admission, replay protection, duplicate-response handling, stale-event rejection, and slashing tests before use. |
+| `credential-manager` | `initialize`, `create_schema`, `register_issuer`, `issue_credential`, `revoke_credential`, `suspend_credential`, `reactivate_credential`, `transfer_credential`, `verify_credential`, `deactivate_schema`, `deactivate_issuer`, `update_config` | Credential lifecycle lane. Identity-derived schemas must be non-transferable by default and must carry hashes/references only. |
+| `reputation-engine` | `initialize`, `initialize_score`, `record_event`, `record_positive_event`, `record_negative_event`, `apply_decay`, `get_tier`, `update_config` | Optional reputation lane. It must not become a second producer of portfolio trust state without an explicit bridge contract. |
+| `staking-manager` | `initialize_pool`, `stake`, `request_unstake`, `complete_unstake`, `claim_rewards`, `slash`, `update_pool_config`, `set_pool_paused`, `get_stake_info` | Oracle/economic security lane. Requires governance, emergency pause, oracle admission, and slashing policy before sensitive use. |
+
 ## Bridge Event Model
 
 `aadhaar-chain` should emit signed bridge events only after its local verification, review, consent, revocation, and audit records are durable.

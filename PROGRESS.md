@@ -61,6 +61,7 @@ Observed local portfolio service targets:
 - Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
 - Chrome plugin bridge check succeeded by listing open Chrome tabs, but claimed portfolio localhost tabs show `ERR_BLOCKED_BY_CLIENT`; browser acceptance remains blocked on Chrome profile access to the local app pages.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
+- `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` inventories the current `aadhar-solana` Anchor instruction entrypoints for identity registry, verification oracle, credential manager, reputation engine, and staking manager.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 - `npm test` passes in `shared/agent-control-plane` with 30 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, production local-CLI blocking, buyer snapshot trust-state parsing, and capability audit event persistence.
@@ -117,7 +118,7 @@ Proceed in this order:
 
 - [x] Treat as the long-term Solana identity/credential layer candidate, not the active trust source.
 - [x] Decide and document the bridge role before any downstream app depends on it.
-- [ ] Inventory identity registry, verification oracle, credential manager, reputation, and staking instructions.
+- [x] Inventory identity registry, verification oracle, credential manager, reputation, and staking instructions.
 - [x] Define signed `aadhaar-chain` trust event schema, signer/oracle identity, replay protection, revocation mapping, and audit references.
 - [ ] Install and validate prerequisites: Solana validator, PostgreSQL, Redis, Node/Yarn dependencies, Anchor build, and Anchor tests.
 - [ ] Add adversarial program tests before sensitive use.
