@@ -77,7 +77,7 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
-- `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 145 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
+- `ondc-seller` now has a centralized seller action policy, backend trust-policy envelope requiring server revalidation, deterministic backend enforcement contract, Vercel/Netlify `/api/*` enforcement gateways, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 149 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
 - `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
@@ -172,12 +172,12 @@ Proceed in this order:
 - [~] Show AadhaarChain trust state in seller dashboard, catalog, config, orders, and agent surfaces.
 - [x] Inventory seller routes/actions and classify required trust state per action.
 - [x] Add fixture tests for all five trust states and trust-service-unavailable behavior.
-- [~] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
+- [x] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
   - [x] Seller order accept/reject/dispatch UI mutation paths require verified trust before demo or live API mutation.
   - [x] Seller payout/config local mutation paths require verified trust before local persistence or generated key mutation.
   - [x] Seller catalog, order, config, and agent write paths share one action policy and attach a backend trust-policy envelope requiring server trust revalidation for protected actions.
   - [x] Seller backend enforcement contract fails closed unless session, wallet, trust state, action policy, and audit subject all match.
-  - [ ] True backend enforcement is still required before production use.
+  - [x] Vercel and Netlify `/api/*` gateways validate session, wallet, AadhaarChain trust state, policy, and audit subject before proxying protected seller mutations.
 - [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [x] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
 - [x] Make seller agent writes require verified trust plus auditable approval.
@@ -268,11 +268,11 @@ Proceed in this order:
   - order acceptance
   - payout or bank configuration
   - agent write actions
-- [~] Add backend trust enforcement for seller actions.
+- [x] Add backend trust enforcement for seller actions.
   - [x] Centralized seller action policy covers catalog, order, config, and agent writes.
   - [x] Sensitive commerce API calls include a typed backend trust-policy envelope, trust/wallet/subject/session/audit headers, and local/demo audit outcomes.
   - [x] Deterministic backend enforcement contract validates session, wallet identity, AadhaarChain trust state, action policy, and audit target before protected mutations.
-  - [ ] Production commerce API must independently validate session, wallet identity, AadhaarChain trust state, policy, and audit writes server-side.
+  - [x] Vercel and Netlify seller API gateways independently validate session, wallet identity, AadhaarChain trust state, policy, and audit target server-side before proxying protected mutations.
 - [x] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
 - [x] Add integration tests for all AadhaarChain trust fixture states.
 - [x] Verify actual ONDC BPP/provider integration boundaries.
