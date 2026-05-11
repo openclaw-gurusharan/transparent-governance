@@ -77,6 +77,8 @@ Observed local portfolio service targets:
 - `npm test` passes in `ondc-seller` with 123 tests, including five-state seller catalog-write and order-note write trust fixture coverage, seller trust snapshot fixtures, trust-service-unavailable fail-closed hook behavior, and verified-trust gating for order accept/reject/dispatch actions.
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
+- `ondc-seller` now has a centralized seller action policy, audit context for sensitive writes, explicit approval before agent-originated seller writes execute, documented ONDC BPP/provider boundaries, and 138 passing tests across trust policy, catalog, orders, config, agent, and trust fixtures.
+- `ondc-seller` `npm run typecheck`, `npm test`, `npm run lint`, and `npm run build` pass after the seller action policy and approval-flow changes.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
 - `python3 scripts/portfolio/check-trust-consumer-contract.py` passes after the AadhaarChain trust-surface changes and confirms the downstream contract still redacts forbidden raw evidence and PII keys.
@@ -123,11 +125,11 @@ Proceed in this order:
 - [x] Expose `GET /api/identity/{wallet_address}/trust` as the downstream-safe contract.
 - [x] Support deterministic fixture states: `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, `revoked_or_blocked`.
 - [x] Add schema/sample-response coverage for every `trust_version: v1` state.
-- [~] Replace local file or runtime trust state with production-grade persistent storage.
-  - [x] Production startup is blocked when the gateway would use the local JSON trust store; the PostgreSQL trust store remains unimplemented.
-  - [ ] Implement PostgreSQL-backed identity, verification, consent, review, audit, revocation, and attestation persistence.
-- [ ] Implement first-class operator review with reviewer identity, evidence access controls, decision records, and audit receipts.
-- [ ] Add secure evidence storage, retention, deletion, encryption, key rotation, and evidence-access audit controls.
+- [x] Replace local file or runtime trust state with production-grade persistent storage.
+  - [x] Production startup is blocked when the gateway would use the local JSON trust store.
+  - [x] PostgreSQL-backed identity, verification, consent, review, decision, audit, revocation, attestation, evidence-reference, and agent/tool provenance persistence is implemented.
+- [x] Implement first-class operator review with reviewer identity, evidence access controls, decision records, and audit receipts.
+- [x] Add secure evidence storage, retention, deletion, encryption, key rotation, and evidence-access audit controls.
 - [x] Keep raw Aadhaar, PAN, OCR output, document bytes, and fraud/compliance internals out of downstream responses.
 
 #### `aadhar-solana` — Long-Term Chain Layer
@@ -159,6 +161,7 @@ Proceed in this order:
 - [~] Complete the end-to-end buyer journey with recoverable cart/order state and clear API error handling.
   - [x] Live checkout failures fall back to local quotes only when commerce demo mode is active.
   - [x] Live cart API failures now surface explicit cart errors instead of silently falling back to local cart state outside commerce demo mode.
+  - [x] Live order list and order detail routes now recover order state from the commerce API outside demo mode, with explicit loading and error states.
 
 #### `ondc-seller` — Seller Trust Consumer
 
@@ -168,12 +171,13 @@ Proceed in this order:
 - [~] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
   - [x] Seller order accept/reject/dispatch UI mutation paths require verified trust before demo or live API mutation.
   - [x] Seller payout/config local mutation paths require verified trust before local persistence or generated key mutation.
+  - [x] Seller catalog, order, config, and agent write paths share one action policy and emit trust/session headers for commerce API enforcement boundaries.
   - [ ] True backend enforcement is still required before production use.
 - [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
-- [ ] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
-- [~] Make seller agent writes require verified trust plus auditable approval.
+- [x] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
+- [x] Make seller agent writes require verified trust plus auditable approval.
   - [x] Seller agent catalog patches and order follow-up notes require verified trust and record applied or blocked audit events.
-  - [ ] Add explicit approval flow before agent-originated seller writes execute.
+  - [x] Add explicit approval flow before agent-originated seller writes execute.
 
 #### `flatwatch` — Transparency And Audit Consumer
 
@@ -259,10 +263,14 @@ Proceed in this order:
   - order acceptance
   - payout or bank configuration
   - agent write actions
-- [ ] Add backend trust enforcement for seller actions.
+- [~] Add backend trust enforcement for seller actions.
+  - [x] Centralized seller action policy covers catalog, order, config, and agent writes.
+  - [x] Sensitive commerce API calls include trust, wallet, subject, and session context headers and audit local/demo outcomes.
+  - [ ] Production commerce API must independently validate session, wallet identity, AadhaarChain trust state, policy, and audit writes server-side.
 - [x] Add action-level audit logs with wallet, identity, trust state, timestamp, and session.
 - [x] Add integration tests for all AadhaarChain trust fixture states.
-- [ ] Verify actual ONDC BPP/provider integration boundaries.
+- [x] Verify actual ONDC BPP/provider integration boundaries.
+  - [x] `ondc-seller/README.md` documents that this repo is the seller portal and local demo fallback, while production BPP/provider catalog, order, fulfillment, and config writes belong behind `VITE_API_BASE_URL`.
 
 ### 5. FlatWatch
 
