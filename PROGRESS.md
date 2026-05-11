@@ -266,7 +266,8 @@ Proceed in this order:
 
 - [x] Maintain a trust-aware seller shell with wallet connection, trust status, dashboard, catalog, orders, config, and agent routes.
 - [x] Consume AadhaarChain trust through identity and `/trust` endpoints.
-- [~] Keep frontend trust UX aligned with portfolio trust states.
+- [x] Keep frontend trust UX aligned with portfolio trust states.
+  - [x] Dashboard, catalog, config, order list/detail, and agent surfaces all render AadhaarChain trust state before elevated seller actions.
 - [x] Define server-side trust policy for seller actions:
   - product draft creation
   - product publishing
