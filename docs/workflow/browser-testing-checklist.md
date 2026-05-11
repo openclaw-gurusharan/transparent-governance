@@ -7,24 +7,26 @@ it.
 
 ## Preflight
 
-1. Start the workspace browser:
-   `chromebeta-cdp`
+1. Start or select the workspace Chrome target through the Chrome plugin.
 2. Verify the debug endpoint:
-   `curl http://127.0.0.1:9222/json/version`
+   `scripts/browser/check-cdp-endpoint.sh`
 3. Start a fresh Codex session only after `9222` is live.
 4. Confirm the required app servers and backends are running before opening the
    browser flow.
 5. Prefer existing logged-in tabs in the Chrome Beta debug profile over opening
    new ones.
 
-## MCP Sanity Check
+## Chrome Plugin Sanity Check
 
-1. `codex mcp list` should show `chrome-devtools` as `enabled`.
-2. The active config should use:
-   `--browser-url=http://127.0.0.1:9222`
-3. Do not combine `--browser-url` with `--channel`.
-4. If `mcp__chrome_devtools__*` tools are missing from the session, treat that
-   as a tooling-path failure before drawing app conclusions.
+1. Use the Chrome plugin/browser client for browser-based testing.
+2. Do not satisfy browser validation with shell-only HTTP probes, Playwright,
+   Computer Use, AppleScript, or a clean automation browser when the flow needs
+   wallet, cookie, extension, or logged-in state.
+3. The Chrome plugin must attach to the Chrome Beta debug profile that exposes
+   DevTools JSON on `127.0.0.1:9222`.
+4. If the Chrome plugin tools are missing from the session, or `9222` is a
+   regular Chrome listener that returns `404` for `/json/version`, treat that as
+   a tooling-path failure before drawing app conclusions.
 
 ## Fast Action Loop
 
@@ -83,7 +85,8 @@ Capture at least:
 Stop and ask or fix the setup first if:
 
 - `9222` is not live
-- the Chrome DevTools MCP tools are missing from the session
+- `9222` returns `404` for `/json/version`
+- the Chrome plugin tools are missing from the session
 - the wrong Chrome profile is attached
 - the required logged-in or wallet-prepared tab is missing
 - the backend needed for the flow is clearly down

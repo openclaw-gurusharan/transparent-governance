@@ -57,6 +57,7 @@ Observed local portfolio service targets:
 - `python3 scripts/portfolio/check-auth-composition.py` passes.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end across AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
+- `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
 
 ## Key Findings
 
@@ -267,7 +268,8 @@ Proceed in this order:
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
 - The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
-- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `127.0.0.1:9222` is occupied by regular Google Chrome using the Default profile, returns `404` for `/json/version`, and does not expose the required Chrome Beta debug-profile DevTools endpoint.
+- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `scripts/browser/check-cdp-endpoint.sh` does not find the required Chrome Beta debug-profile DevTools endpoint on `127.0.0.1:9222`.
+- Current browser preflight evidence: `scripts/portfolio/acceptance-gate.sh --browser-only` fails in the browser preflight and reports `Google` PID `14024` listening on `127.0.0.1:9222`.
 
 ## Next Checkpoint
 

@@ -25,7 +25,7 @@ Companion quick reference:
 
 Use the lightest tool that can validate the real behavior:
 
-- `chrome-devtools` MCP for DOM inspection, console errors, network inspection, and non-extension UI validation
+- Chrome plugin/browser client for DOM inspection, console errors, network inspection, and Chrome-profile-backed browser validation
 - live-browser attach over CDP when the user already has the required browser profile, login state, cookies, or wallet extensions installed
 - Comet only for exploratory browser checks or flows that do not require extension popup control
 - repo-native E2E harnesses such as Playwright or Synpress when the flow must become repeatable in CI or across sessions
@@ -53,12 +53,12 @@ Operational rules:
 
 This is stricter than the generic live-attach guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent drifts into a clean browser.
 
-MCP attachment rules:
+Chrome attachment rules:
 
-- when Codex uses `chrome-devtools-mcp` against the live browser, configure it with `--browser-url=http://127.0.0.1:9222`
-- do not combine `--browser-url` with `--channel`; that combination causes `chrome-devtools-mcp` startup failure and the browser tools will not register in the session
-- start the Chrome Beta debug browser before starting the Codex session; if Codex starts first, the browser tools may not bind even when the config is otherwise correct
-- for wallet or extension-backed flows, prefer attaching to the already-running debug browser over asking MCP to launch its own Chrome instance
+- use the Chrome plugin for browser-based testing in this workspace
+- verify `127.0.0.1:9222/json/version` with `scripts/browser/check-cdp-endpoint.sh` before claiming browser readiness
+- if the Chrome plugin tools are missing from the session, treat that as a browser tooling failure and do not substitute shell-only, Playwright, Computer Use, AppleScript, or a clean automation browser
+- for wallet or extension-backed flows, attach to the already-running debug browser instead of launching a new browser instance
 
 ## User-Managed Session Contract
 
@@ -106,14 +106,14 @@ Required flow:
 1. confirm the app under test is already running locally
 2. confirm the installed browser actually contains the required extension and session state
 3. if Chrome remote debugging is needed, launch a debuggable copy of the user's profile instead of the default profile
-4. attach over CDP
+4. attach through the Chrome plugin
 5. use the tab the user designates; do not create or repurpose tabs unless explicitly requested
 6. pause at wallet-signing or approval prompts so the user can complete the human-controlled action
 7. resume inspection only after the user signals that approval is complete
 
 Execution recipe for this workspace:
 
-1. verify `127.0.0.1:9222` is live
+1. verify `127.0.0.1:9222` is live with `scripts/browser/check-cdp-endpoint.sh`
 2. confirm the process is `Google Chrome Beta` using `~/.codex/chrome-beta-debug-profile`
 3. inspect the live targets from `http://127.0.0.1:9222/json/list`
 4. identify the already-open AadhaarChain or target-app tab the user intends to use

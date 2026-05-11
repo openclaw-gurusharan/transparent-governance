@@ -23,12 +23,9 @@ EOF
 
 print_browser_launch_hint() {
   cat >&2 <<'EOF'
-[hint] start the required Chrome Beta debug-profile session with:
-if ! curl -sf http://127.0.0.1:9222/json/version >/dev/null; then
-  open -na "Google Chrome Beta" --args \
-    --remote-debugging-port=9222 \
-    --user-data-dir="$HOME/.codex/chrome-beta-debug-profile"
-fi
+[hint] browser acceptance requires the Chrome plugin attached to the Chrome Beta debug profile.
+[hint] verify the required DevTools endpoint with:
+  scripts/browser/check-cdp-endpoint.sh
 EOF
 }
 
@@ -73,7 +70,7 @@ check_service() {
 
 if [ "$RUN_BROWSER" -eq 1 ]; then
   run_step "browser and service preflight" /bin/zsh -lc "
-    curl -sf http://127.0.0.1:9222/json/version >/dev/null || {
+    '$ROOT/scripts/browser/check-cdp-endpoint.sh' >/dev/null || {
       echo '[error] Chrome Beta debug session is not available on 127.0.0.1:9222' >&2
       $(typeset -f print_browser_launch_hint)
       print_browser_launch_hint
