@@ -62,6 +62,7 @@ Observed local portfolio service targets:
 - Chrome plugin bridge check succeeded by listing open Chrome tabs, but claimed portfolio localhost tabs show `ERR_BLOCKED_BY_CLIENT`; browser acceptance remains blocked on Chrome profile access to the local app pages.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` inventories the current `aadhar-solana` Anchor instruction entrypoints for identity registry, verification oracle, credential manager, reputation engine, and staking manager.
+- Seller payout/config local persistence now requires `verified` trust across all five trust fixture states; `ondc-seller` `npm run test`, `npm run typecheck`, and `npm run lint` pass.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 - `npm test` passes in `shared/agent-control-plane` with 30 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, production local-CLI blocking, buyer snapshot trust-state parsing, and capability audit event persistence.
@@ -153,7 +154,7 @@ Proceed in this order:
 - [x] Add fixture tests for all five trust states and trust-service-unavailable behavior.
 - [~] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
   - [x] Seller order accept/reject/dispatch UI mutation paths require verified trust before demo or live API mutation.
-  - [ ] Payout/config changes still need verified-trust enforcement.
+  - [x] Seller payout/config local mutation paths require verified trust before local persistence or generated key mutation.
   - [ ] True backend enforcement is still required before production use.
 - [x] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
 - [ ] Finish the seller operating loop for catalog, orders, fulfillment, config, and support.
