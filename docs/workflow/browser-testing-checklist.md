@@ -8,25 +8,21 @@ it.
 ## Preflight
 
 1. Start or select the workspace Chrome target through the Chrome plugin.
-2. Verify the debug endpoint:
-   `scripts/browser/check-cdp-endpoint.sh`
-3. Start a fresh Codex session only after `9222` is live.
-4. Confirm the required app servers and backends are running before opening the
+2. Use `scripts/browser/check-cdp-endpoint.sh` only when diagnosing whether the
+   expected Chrome profile is available.
+3. Confirm the required app servers and backends are running before opening the
    browser flow.
-5. Prefer existing logged-in tabs in the Chrome Beta debug profile over opening
+4. Prefer existing logged-in tabs in the Chrome profile over opening
    new ones.
 
 ## Chrome Plugin Sanity Check
 
 1. Use the Chrome plugin/browser client for browser-based testing.
-2. Do not satisfy browser validation with shell-only HTTP probes, Playwright,
-   Computer Use, AppleScript, or a clean automation browser when the flow needs
-   wallet, cookie, extension, or logged-in state.
-3. The Chrome plugin must attach to the Chrome Beta debug profile that exposes
-   DevTools JSON on `127.0.0.1:9222`.
-4. If the Chrome plugin tools are missing from the session, or `9222` is a
-   regular Chrome listener that returns `404` for `/json/version`, treat that as
-   a tooling-path failure before drawing app conclusions.
+2. Do not satisfy browser validation with shell-only HTTP probes or any browser
+   tool other than the Chrome plugin.
+3. If the Chrome plugin tools are missing from the session, or Chrome cannot
+   access the target app, treat that as a tooling-path failure before drawing
+   app conclusions.
 
 ## Fast Action Loop
 
@@ -66,7 +62,7 @@ Every browser failure should be classified as one of:
 - product bug
 - missing backend or runtime dependency
 - wrong browser profile or missing extension state
-- MCP or browser-session startup failure
+- Chrome plugin or browser-session startup failure
 
 Do not collapse these into one generic “app broken” result.
 

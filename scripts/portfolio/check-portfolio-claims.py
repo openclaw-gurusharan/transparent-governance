@@ -29,12 +29,12 @@ REQUIRED_SNIPPETS = {
     ],
     "docs/workflow/browser-testing-checklist.md": [
         "Use the Chrome plugin/browser client for browser-based testing.",
-        "Do not satisfy browser validation with shell-only HTTP probes, Playwright,",
-        "`9222` returns `404` for `/json/version`",
+        "Do not satisfy browser validation with shell-only HTTP probes or any browser",
+        "tool other than the Chrome plugin.",
     ],
     "docs/workflow/browser-testing-control-plane.md": [
-        "Chrome plugin/browser client for DOM inspection",
-        "do not substitute shell-only, Playwright, Computer Use, AppleScript, or a clean automation browser",
+        "Chrome plugin/browser client is the only browser-validation lane",
+        "Do not substitute another browser tool, another browser MCP, shell-only HTTP probes, or a fresh automation browser",
         "scripts/browser/check-cdp-endpoint.sh",
     ],
     "scripts/browser/check-cdp-endpoint.sh": [

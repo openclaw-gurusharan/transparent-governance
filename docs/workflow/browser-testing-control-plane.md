@@ -23,42 +23,41 @@ Companion quick reference:
 
 ## Tool Selection
 
-Use the lightest tool that can validate the real behavior:
+Use the Chrome plugin/browser client for browser-based validation.
 
-- Chrome plugin/browser client for DOM inspection, console errors, network inspection, and Chrome-profile-backed browser validation
-- live-browser attach over CDP when the user already has the required browser profile, login state, cookies, or wallet extensions installed
-- Comet only for exploratory browser checks or flows that do not require extension popup control
-- repo-native E2E harnesses such as Playwright or Synpress when the flow must become repeatable in CI or across sessions
-
-Do not default to a fresh automation browser for wallet flows, extension signing, or authenticated journeys that depend on the user's installed browser state.
+- Chrome plugin/browser client is the only browser-validation lane for DOM inspection, console errors, network inspection, screenshots, wallet/profile-backed validation, and same-user portfolio acceptance.
+- Do not substitute another browser tool, another browser MCP, shell-only HTTP probes, or a fresh automation browser for browser-based testing.
+- Repo-native tests may provide deterministic coverage, but they do not replace Chrome-plugin browser acceptance when the task asks for browser-based testing.
 
 ## Workspace Browser Standard
 
-For this workspace, the default browser-testing target is the existing Chrome Beta debug session exposed on `127.0.0.1:9222` and backed by:
+For this workspace, browser-based testing must use the Chrome plugin attached to the user's Chrome profile.
+
+Expected profile setup:
 
 - profile: `~/.codex/chrome-beta-debug-profile`
 - browser: `Google Chrome Beta`
-- mode: live CDP reuse, not fresh browser launch
+- mode: Chrome plugin/browser client
 
 This is the workspace-standard browser for web testing because it contains the user's real extensions, wallet state, cookies, and settings. Treat this profile as the default for all browser testing in this workspace unless the user explicitly asks for a different browser context.
 
 Operational rules:
 
-1. if `curl -s http://127.0.0.1:9222/json/version` succeeds, reuse that session
-2. do not launch a new Chrome, Chromium, or automation browser while that session is available
-3. do not create a separate browser session for testing just because a tool can do so
-4. prefer the user's already-open designated tab in that attached session
-5. only open a new tab inside the existing attached session when the user explicitly approves it or no designated tab exists and the task cannot proceed otherwise
-6. if the `9222` endpoint is unavailable, stop and ask before launching or replacing the debug session
+1. start with a lightweight Chrome plugin check such as listing open tabs
+2. if Chrome plugin communication fails, diagnose the Chrome plugin, native-host, and profile setup before browser testing
+3. do not create or use a separate browser tool just because one is available
+4. prefer the user's already-open designated tab in the Chrome profile
+5. only open a new tab inside Chrome when the user explicitly approves it or no designated tab exists and the task cannot proceed otherwise
+6. if the expected Chrome profile is unavailable, stop and ask before launching or replacing it
 
 This is stricter than the generic live-attach guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent drifts into a clean browser.
 
 Chrome attachment rules:
 
 - use the Chrome plugin for browser-based testing in this workspace
-- verify `127.0.0.1:9222/json/version` with `scripts/browser/check-cdp-endpoint.sh` before claiming browser readiness
-- if the Chrome plugin tools are missing from the session, treat that as a browser tooling failure and do not substitute shell-only, Playwright, Computer Use, AppleScript, or a clean automation browser
-- for wallet or extension-backed flows, attach to the already-running debug browser instead of launching a new browser instance
+- use `scripts/browser/check-cdp-endpoint.sh` only as a setup diagnostic for the expected Chrome profile
+- if the Chrome plugin tools are missing from the session, treat that as a browser tooling failure and do not substitute another browser tool or browser MCP
+- for wallet or extension-backed flows, use the already-running Chrome profile instead of launching a new browser instance
 
 ## User-Managed Session Contract
 
