@@ -80,6 +80,7 @@ Observed local portfolio service targets:
 - `npm run lint` passes in `flatwatch/frontend` after widening `TrustSurface.trust_state` to the full portfolio trust-state union.
 - The latest deterministic gate run includes `flatwatch/frontend` full checks: seven Jest suites, 40 tests, ESLint, and `next build`.
 - `python3 scripts/portfolio/check-portfolio-claims.py` passes with semantic scans for unsupported raw-identity-on-chain, premature deployed-shared-auth, and production-ready mock integration claims.
+- `python3 scripts/portfolio/check-portfolio-claims.py` still passes after FlatWatch README labels Razorpay/MyGate and OCR as POC/mock surfaces.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes after the agent-control-plane runtime-origin guard update.
 - `aadhar-solana` prerequisite probe: `solana --version` reports `2.1.5`, `anchor --version` reports `0.31.1`, `yarn --version` reports `1.22.22`, `node_modules` is missing, and no listeners were observed on `8899` or `5432`; `redis-cli ping` returns connection refused on `6379`.
 - `scripts/portfolio/seed-trust-fixture.sh CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs verified` seeds the active local wallet, and `/api/identity/CSrYz3e5Jnyatgye21resjBtzRYqpoqrxtGqPXQZuCbs/trust` confirms `trust_state=verified` with `high_trust_eligible=true`.
@@ -248,8 +249,8 @@ Proceed in this order:
 - [~] Keep RBAC concepts for resident, admin, and super admin.
 - [!] Demo auth remains unsafe for real users.
 - [x] Hardcoded/default development secrets are not accepted in production.
-- [!] OCR remains mock/POC-grade.
-- [!] Razorpay/payment ingestion remains mock/POC-grade.
+- [x] OCR remains labeled mock/POC-grade until replaced.
+- [x] Razorpay/payment ingestion remains labeled mock/POC-grade until replaced.
 - [!] Receipt upload needs production controls.
 - [ ] Replace demo auth with production-safe auth.
 - [x] Fail startup in production when `SECRET_KEY` or `ENCRYPTION_KEY` is missing.
