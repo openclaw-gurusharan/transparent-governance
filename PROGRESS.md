@@ -78,6 +78,8 @@ Observed local portfolio service targets:
 - `npm run typecheck` passes in `ondc-seller` after widening the local `TrustSurface.trust_state` type to include `no_identity`.
 - `npm run lint` passes in `ondc-seller`.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=. /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 23 tests after production-mode storage guard coverage.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest gateway/tests -q` passes in `aadhaar-chain` with 31 tests after PostgreSQL trust-store support, encrypted evidence storage, review/evidence-access/revocation APIs, and verification upload rate-limit coverage.
+- `python3 scripts/portfolio/check-trust-consumer-contract.py` passes after the AadhaarChain trust-surface changes and confirms the downstream contract still redacts forbidden raw evidence and PII keys.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_control_plane.py -q` passes in `flatwatch/backend` with eight control-plane tests, including five-state FlatWatch runtime capability fixture coverage.
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest -q -p pytest_asyncio.plugin --asyncio-mode=auto` passes in `flatwatch/backend` with 117 tests after production secret enforcement, demo/mock production-startup guard coverage, receipt upload limit/MIME/path controls, signed payment webhook/idempotency coverage, OCR provenance/manual-review coverage, challenge write audit coverage, and admin-only audit review API coverage.
 - `npm test -- src/lib/__tests__/trust.test.ts` passes in `flatwatch/frontend` with six assertions covering `no_identity` and the four identity-present AadhaarChain trust states.
@@ -139,7 +141,8 @@ Proceed in this order:
 
 #### `ondc-buyer` — Buyer Trust Consumer
 
-- [~] Show AadhaarChain trust state in the buyer experience.
+- [x] Show AadhaarChain trust state in the buyer experience.
+  - [x] Trust status components render labels and buyer-action explanations for all five portfolio trust states.
 - [x] Inventory buyer actions and classify them as public, authenticated, trust-aware, or high-trust.
 - [x] Add fixture tests for all five trust states across profile, checkout, and agent surfaces.
   - [x] Trust snapshot mapping covers missing identity plus the identity-present fixture states.
@@ -204,17 +207,17 @@ Proceed in this order:
 - [x] Keep downstream consumers on a narrow trust contract instead of raw verification evidence.
 - [x] Model trust states beyond boolean verification: `no_identity`, `identity_present_unverified`, `verified`, `manual_review`, and `revoked_or_blocked`.
 - [x] Expose `GET /api/identity/{wallet_address}`, `GET /api/identity/{wallet_address}/trust`, and `GET /api/identity/status/{verification_id}` from the active FastAPI gateway.
-- [~] Keep agent-assisted verification provenance modeled in code.
+- [x] Keep agent-assisted verification provenance modeled in code.
 - [x] Lock the `/trust` OpenAPI schema as the stable downstream contract.
-- [~] Move identity, verification, consent, review, and audit records into durable production persistence.
+- [x] Move identity, verification, consent, review, and audit records into durable production persistence.
   - [x] Production mode cannot start on the local JSON trust store.
-  - [ ] Durable PostgreSQL persistence remains open.
+  - [x] Durable PostgreSQL persistence is implemented for identity anchors, verification workflows, evidence references, consent, review, decision, revocation, attestation, audit receipts, and agent/tool provenance records.
 - [x] Add production mode that cannot approve from fallback-only verification evidence.
-- [ ] Add operator review queues, reviewer identity, evidence access controls, final decisions, and appeal or correction handling.
-- [~] Add immutable audit events for identity creation, verification, consent, revocation, review, and downstream trust reads.
+- [x] Add operator review queues, reviewer identity, evidence access controls, final decisions, and appeal or correction handling.
+- [x] Add immutable audit events for identity creation, verification, consent, revocation, review, and downstream trust reads.
   - [x] Local append-only audit events cover identity creation, verification requests, verification decisions, and downstream trust reads.
-  - [ ] Consent, revocation, review queue decisions, and production-grade audit storage remain open.
-- [ ] Add a formal Aadhaar/PAN threat model covering retention, deletion, encryption, key rotation, access logging, and breach monitoring.
+  - [x] Consent, revocation, review queue decisions, evidence access, encrypted evidence storage, and production PostgreSQL audit storage are covered in code.
+- [x] Add a formal Aadhaar/PAN threat model covering retention, deletion, encryption, key rotation, access logging, and breach monitoring.
 
 ### 2. `aadhar-solana` Backend And On-Chain Layer
 
@@ -329,7 +332,7 @@ Proceed in this order:
 
 ## Highest-Priority Risks
 
-- [!] P0: Aadhaar/PAN evidence handling needs production-grade privacy, storage, review, retention, deletion, encryption, key rotation, and audit controls.
+- [!] P1: Aadhaar/PAN evidence handling now has encrypted local storage, production key requirements, review/evidence-access audit controls, rate limits, and a formal threat model; deployed production still needs managed object storage, migration wiring, KMS rotation tests, and audit-stream monitoring.
 - [!] P0: FlatWatch demo auth and default secrets must be removed before real users or real society data.
 - [!] P0: Buyer, seller, and FlatWatch protected actions need server-side trust enforcement.
 - [!] P1: FlatWatch OCR and payment ingestion are mocks and must remain labeled as such until replaced.
