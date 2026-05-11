@@ -53,9 +53,9 @@ Observed local portfolio service targets:
 - Agent control plane health responds at `/api/health`.
 - The shared control plane correctly downgrades a wallet to read-only when the current AadhaarChain gateway reports no identity.
 - `python3 scripts/portfolio/check-trust-consumer-contract.py` passes and verifies all five documented trust states against the live FastAPI test client.
-- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_agent_manager.py tests/test_routes.py -q` passes in `aadhaar-chain/gateway` with 24 tests.
+- `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_agent_manager.py tests/test_routes.py -q` passes in `aadhaar-chain/gateway` with 26 tests.
 - `python3 scripts/portfolio/check-auth-composition.py` passes after buyer, seller, and FlatWatch auth-composition markers; FlatWatch remains explicitly app-local auth.
-- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the AadhaarChain production fallback-approval guard, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
+- `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end after the AadhaarChain local audit event lane, covering AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
 - Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
@@ -64,6 +64,7 @@ Observed local portfolio service targets:
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` inventories the current `aadhar-solana` Anchor instruction entrypoints for identity registry, verification oracle, credential manager, reputation engine, and staking manager.
 - Seller payout/config local persistence now requires `verified` trust across all five trust fixture states; `ondc-seller` `npm run test`, `npm run typecheck`, and `npm run lint` pass.
 - AadhaarChain production mode downgrades deterministic fallback fraud or compliance evidence to manual review instead of approval.
+- AadhaarChain appends immutable local audit events for identity creation, verification requests, verification decisions, and downstream trust reads.
 - `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
 - `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 - `npm test` passes in `shared/agent-control-plane` with 30 assertions across buyer, seller, FlatWatch, all five trust states, runtime-auth blocked behavior, server-side agent write-action gating, CORS origin policy, production local-CLI blocking, buyer snapshot trust-state parsing, and capability audit event persistence.
@@ -208,7 +209,9 @@ Proceed in this order:
   - [ ] Durable PostgreSQL persistence remains open.
 - [x] Add production mode that cannot approve from fallback-only verification evidence.
 - [ ] Add operator review queues, reviewer identity, evidence access controls, final decisions, and appeal or correction handling.
-- [ ] Add immutable audit events for identity creation, verification, consent, revocation, review, and downstream trust reads.
+- [~] Add immutable audit events for identity creation, verification, consent, revocation, review, and downstream trust reads.
+  - [x] Local append-only audit events cover identity creation, verification requests, verification decisions, and downstream trust reads.
+  - [ ] Consent, revocation, review queue decisions, and production-grade audit storage remain open.
 - [ ] Add a formal Aadhaar/PAN threat model covering retention, deletion, encryption, key rotation, access logging, and breach monitoring.
 
 ### 2. `aadhar-solana` Backend And On-Chain Layer
