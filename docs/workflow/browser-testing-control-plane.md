@@ -10,7 +10,7 @@ Companion quick reference:
 ## Goals
 
 - keep browser testing deterministic enough to be reviewable
-- avoid launching clean browser sessions when the real flow depends on existing auth or wallet state
+- avoid launching separate browser sessions when the real flow depends on existing auth or wallet state
 - minimize user interruption by defining explicit human handoff points
 - capture browser findings in Linear and durable memory when they change future execution
 
@@ -26,7 +26,7 @@ Companion quick reference:
 Use the Chrome plugin/browser client for browser-based validation.
 
 - Chrome plugin/browser client is the only browser-validation lane for DOM inspection, console errors, network inspection, screenshots, wallet/profile-backed validation, and same-user portfolio acceptance.
-- Do not substitute another browser tool, another browser MCP, shell-only HTTP probes, or a fresh automation browser for browser-based testing.
+- Do not substitute anything else for Chrome-plugin browser-based testing.
 - Repo-native tests may provide deterministic coverage, but they do not replace Chrome-plugin browser acceptance when the task asks for browser-based testing.
 
 ## Workspace Browser Standard
@@ -50,13 +50,13 @@ Operational rules:
 5. only open a new tab inside Chrome when the user explicitly approves it or no designated tab exists and the task cannot proceed otherwise
 6. if the expected Chrome profile is unavailable, stop and ask before launching or replacing it
 
-This is stricter than the generic live-attach guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent drifts into a clean browser.
+This is stricter than generic browser guidance because wallet, cookie, and extension-backed validation becomes invalid when the agent leaves the Chrome plugin path.
 
 Chrome attachment rules:
 
 - use the Chrome plugin for browser-based testing in this workspace
 - use `scripts/browser/check-cdp-endpoint.sh` only as a setup diagnostic for the expected Chrome profile
-- if the Chrome plugin tools are missing from the session, treat that as a browser tooling failure and do not substitute another browser tool or browser MCP
+- if the Chrome plugin tools are missing from the session, treat that as a browser tooling failure and do not substitute another browser path
 - for wallet or extension-backed flows, use the already-running Chrome profile instead of launching a new browser instance
 
 ## User-Managed Session Contract
@@ -81,7 +81,7 @@ Before any browser action, answer these questions explicitly:
 4. does the app under test support that wallet extension right now
 5. which exact tab will be used for the run
 6. where is the human handoff point for signing, approval, or OTP-style actions
-7. is the CDP attach endpoint already live and verified
+7. can the Chrome plugin list or claim the target Chrome tab
 
 If any answer is unknown, stop and resolve it before opening automation tabs or drawing conclusions from the browser run.
 
@@ -98,41 +98,40 @@ This rule exists to prevent "implemented" from being reported when the visual or
 
 ## Live Browser Attach Policy
 
-For wallet or authenticated flows, prefer the user's existing browser context over a new automation browser.
+For wallet or authenticated flows, use the user's existing Chrome context through the Chrome plugin.
 
 Required flow:
 
 1. confirm the app under test is already running locally
 2. confirm the installed browser actually contains the required extension and session state
-3. if Chrome remote debugging is needed, launch a debuggable copy of the user's profile instead of the default profile
-4. attach through the Chrome plugin
+3. if the expected Chrome profile is missing, ask the user before launching or replacing it
+4. connect through the Chrome plugin
 5. use the tab the user designates; do not create or repurpose tabs unless explicitly requested
 6. pause at wallet-signing or approval prompts so the user can complete the human-controlled action
 7. resume inspection only after the user signals that approval is complete
 
 Execution recipe for this workspace:
 
-1. verify `127.0.0.1:9222` is live with `scripts/browser/check-cdp-endpoint.sh`
-2. confirm the process is `Google Chrome Beta` using `~/.codex/chrome-beta-debug-profile`
-3. inspect the live targets from `http://127.0.0.1:9222/json/list`
-4. identify the already-open AadhaarChain or target-app tab the user intends to use
-5. if no logged-in target tab exists, ask the user to open it and log in before proceeding
-6. attach to that exact tab over CDP
-7. only then begin DOM inspection, network inspection, or interaction
+1. use the Chrome plugin to list open tabs
+2. confirm the selected tab belongs to the expected Chrome profile and app route
+3. identify the already-open AadhaarChain or target-app tab the user intends to use
+4. if no logged-in target tab exists, ask the user to open it and log in before proceeding
+5. claim that exact tab through the Chrome plugin
+6. only then begin DOM inspection, network inspection, or interaction
 
-Do not skip from "debug endpoint is live" straight to browser actions. The tab-selection step is mandatory.
+Do not skip from "Chrome is available" straight to browser actions. The tab-selection step is mandatory.
 
 Hard rule for this workspace:
 
-- when the Chrome Beta debug session on `127.0.0.1:9222` is live, agents must attach to and reuse it
-- agents must not create a separate Chrome session for testing while that session is healthy
-- agents must not treat "new browser tab" as the default first action; the default first action is attach, inspect existing tabs, and select the user-designated one
+- agents must use the Chrome plugin for browser-based testing
+- agents must not create a separate browser session for testing while the user's Chrome profile is available
+- agents must not treat "new browser tab" as the default first action; the default first action is list Chrome tabs, inspect existing tabs, and select the user-designated one
 - agents must not proceed with authenticated or wallet-backed testing unless the target logged-in tab is already open or the user has explicitly been asked to open and log in to it first
-- agents must not rely on a blank automation page when the real workflow requires the user's configured profile state
+- agents must not rely on a blank page when the real workflow requires the user's configured Chrome profile state
 
 ## Missing Session Handoff
 
-If the workspace-standard Chrome Beta debug session cannot be found, the agent should stop and ask the user to restore the Chrome plugin/debug-profile path instead of silently launching a fresh browser on its own.
+If the workspace-standard Chrome profile cannot be found through the Chrome plugin, the agent should stop and ask the user to restore the Chrome plugin/profile path instead of silently launching a fresh browser on its own.
 
 Default handoff check:
 
@@ -140,11 +139,11 @@ Default handoff check:
 scripts/browser/check-cdp-endpoint.sh
 ```
 
-Use the Chrome plugin/system Chrome flow for any restart or replacement. Do not replace the browser with shell-only automation or a clean browser profile for wallet-backed acceptance.
+Use the Chrome plugin/system Chrome flow for any restart or replacement. Do not replace the browser with another browser tool for wallet-backed acceptance.
 
 ## Chrome Constraint
 
-Recent Chrome builds ignore remote debugging flags on the default real profile. For attach-based testing, use a copied profile plus an explicit `--user-data-dir` and launch the browser binary directly rather than relying on `open -a`.
+Recent Chrome builds may ignore profile flags on the default real profile. For Chrome-plugin testing, use the configured profile and launch the browser binary directly when a replacement profile is explicitly needed.
 
 Example macOS pattern:
 
@@ -228,11 +227,11 @@ Create or update a durable memory note when browser testing reveals a reusable c
 
 This workflow was tightened after friction from a live wallet-testing session. The main corrective rules are:
 
-- choose the browser mode first; do not discover mid-run that a clean automation browser cannot exercise the real flow
+- choose the Chrome plugin path first; do not discover mid-run that the browser check used the wrong tool
 - confirm the installed wallet before touching the app, because wallet-adapter mismatch is a setup bug, not a product finding
 - prefer direct browser-binary launch over `open -a` when a debuggable Chrome copy is required
 - require a designated user tab before attach-driven testing begins
 - treat browser-tooling failure as its own class of blocker and fix it before resuming product validation
-- if `127.0.0.1:9222` is already live, reuse that Chrome Beta debug session and never spin up a separate Chrome session for testing
-- if the `9222` session is missing and the user has not asked the agent to replace it, give the user the launch command rather than opening a different browser session
-- if Chrome DevTools MCP tools are missing from the session, verify both the debug endpoint and the MCP args before blaming the browser state
+- if the Chrome plugin can list tabs, reuse that Chrome profile and never use a separate browser tool for testing
+- if the Chrome profile is missing and the user has not asked the agent to replace it, give the user the launch command rather than opening a different browser session
+- if Chrome plugin tools are missing from the session, verify the Chrome plugin setup before blaming the browser state

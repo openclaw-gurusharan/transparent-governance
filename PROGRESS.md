@@ -58,7 +58,11 @@ Observed local portfolio service targets:
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end across AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
 - `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 - `scripts/browser/check-cdp-endpoint.sh` and `scripts/portfolio/acceptance-gate.sh --browser-only` now fail loud when `127.0.0.1:9222` is unavailable or is not a Chrome DevTools JSON endpoint, including the listener process and Chrome Beta debug-profile recovery command.
+- Browser workflow owner docs now require the Chrome plugin as the only browser-based testing lane.
+- Chrome plugin bridge check succeeded by listing open Chrome tabs, but claimed portfolio localhost tabs show `ERR_BLOCKED_BY_CLIENT`; browser acceptance remains blocked on Chrome profile access to the local app pages.
 - `docs/reference/AADHAAR-SOLANA-BRIDGE-SPEC.md` compares the current `aadhar-solana` API and chain surfaces against `TRUST-CONSUMER-CONTRACT.md` and defines the bridge event model before integration.
+- `docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md` defines buyer, seller, FlatWatch, and agent action levels for public, authenticated, trust-aware, verified, and step-up flows.
+- `scripts/portfolio/verify-trust-matrix.py` is now a guardrail that refuses shell-driven browser validation and routes live trust-matrix evidence to the Chrome plugin path.
 
 ## Key Findings
 
@@ -106,7 +110,7 @@ Proceed in this order:
 #### `ondc-buyer` — Buyer Trust Consumer
 
 - [~] Show AadhaarChain trust state in the buyer experience.
-- [ ] Inventory buyer actions and classify them as public, authenticated, trust-aware, or high-trust.
+- [x] Inventory buyer actions and classify them as public, authenticated, trust-aware, or high-trust.
 - [ ] Add fixture tests for all five trust states across profile, checkout, and agent surfaces.
 - [ ] Enforce high-value checkout, restricted checkout, refunds, disputes, payment changes, account recovery, and agent writes server-side.
 - [ ] Keep trust display informational; do not make frontend trust state the enforcement boundary.
@@ -116,7 +120,7 @@ Proceed in this order:
 #### `ondc-seller` — Seller Trust Consumer
 
 - [~] Show AadhaarChain trust state in seller dashboard, catalog, config, orders, and agent surfaces.
-- [ ] Inventory seller routes/actions and classify required trust state per action.
+- [x] Inventory seller routes/actions and classify required trust state per action.
 - [ ] Add fixture tests for all five trust states and trust-service-unavailable behavior.
 - [ ] Enforce catalog publish, price changes, order accept/reject, fulfillment changes, payout/config changes, and agent writes server-side.
 - [ ] Record audit events with wallet, subject, action, trust state, timestamp, and outcome for sensitive actions.
@@ -179,7 +183,7 @@ Proceed in this order:
 - [x] Maintain a trust-aware buyer shell with wallet connection, trust status, search, cart, checkout, orders, and agent routes.
 - [x] Consume AadhaarChain trust through identity and `/trust` endpoints.
 - [~] Keep frontend trust UX aligned with portfolio trust states.
-- [ ] Define exactly which buyer actions require verified trust.
+- [x] Define exactly which buyer actions require verified trust.
 - [ ] Add server-side enforcement for protected buyer actions; frontend trust display must not be the enforcement boundary.
 - [ ] Add integration tests for all AadhaarChain trust fixture states.
 - [ ] Reconcile README/backend claims with actual package dependencies and backend availability.
@@ -190,7 +194,7 @@ Proceed in this order:
 - [x] Maintain a trust-aware seller shell with wallet connection, trust status, dashboard, catalog, orders, config, and agent routes.
 - [x] Consume AadhaarChain trust through identity and `/trust` endpoints.
 - [~] Keep frontend trust UX aligned with portfolio trust states.
-- [ ] Define server-side trust policy for seller actions:
+- [x] Define server-side trust policy for seller actions:
   - product draft creation
   - product publishing
   - order acceptance
@@ -250,7 +254,7 @@ Proceed in this order:
 - [ ] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
 - [ ] Validate all trust states in browser-visible UX.
 - [x] Run `scripts/portfolio/acceptance-gate.sh --deterministic-only`.
-- [ ] Run the live trust matrix once browser prerequisites are valid.
+- [ ] Run the live trust matrix through the Chrome plugin once browser prerequisites are valid.
 - [ ] Capture every blocker as product, runtime, browser, or dependency.
 
 ## Highest-Priority Risks
@@ -271,6 +275,7 @@ Proceed in this order:
 - The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
 - Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but `scripts/browser/check-cdp-endpoint.sh` does not find the required Chrome Beta debug-profile DevTools endpoint on `127.0.0.1:9222`.
 - Current browser preflight evidence: `scripts/portfolio/acceptance-gate.sh --browser-only` fails in the browser preflight and reports `Google` PID `14024` listening on `127.0.0.1:9222`.
+- Current Chrome plugin evidence: the plugin can list and claim Chrome tabs, but the portfolio localhost tabs render `ERR_BLOCKED_BY_CLIENT`.
 
 ## Next Checkpoint
 

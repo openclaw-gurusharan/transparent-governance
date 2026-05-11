@@ -20,20 +20,19 @@ diagnose_listener() {
 print_recovery_hint() {
   cat >&2 <<EOF
 [browser] recovery:
-  1. Close or move the non-CDP process currently using port $PORT.
+  1. Close or move the non-debug process currently using port $PORT.
   2. Use the Chrome plugin/system Chrome flow to attach the Chrome Beta debug
      profile that exposes DevTools JSON on 127.0.0.1:$PORT.
-  3. Do not substitute a clean automation browser for wallet or logged-in
-     acceptance testing.
+  3. Do not substitute another browser tool for wallet or logged-in acceptance testing.
 EOF
 }
 
-echo "[browser] checking CDP endpoint: $URL"
+echo "[browser] checking Chrome debug endpoint: $URL"
 if ! body="$(curl -fsS "$URL" 2>/tmp/codex-cdp-curl.err)"; then
   status="$(curl -sS -o /dev/null -w "%{http_code}" "$URL" 2>/dev/null || true)"
   if [ "$status" = "404" ]; then
     echo "[browser] endpoint is listening but does not expose DevTools JSON: $URL" >&2
-    echo "[browser] expected Chrome Beta debug profile on port $PORT, not a regular Chrome profile or non-CDP listener." >&2
+    echo "[browser] expected Chrome Beta debug profile on port $PORT, not a regular Chrome profile or non-debug listener." >&2
     diagnose_listener
     print_recovery_hint
   else

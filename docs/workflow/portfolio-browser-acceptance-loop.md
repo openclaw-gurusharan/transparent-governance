@@ -33,7 +33,7 @@ A meaningful acceptance run must answer:
 Use one designated user identity for the full run:
 
 - one wallet across all wallet-backed flows
-- one logged-in browser profile in Chrome Beta debug mode
+- one logged-in Chrome profile controlled through the Chrome plugin
 - one consistent user persona across all apps
 
 Default journey order:
@@ -54,7 +54,7 @@ Do not start downstream app conclusions while the trust substrate is clearly dow
 
 Before opening the journey:
 
-1. Reuse the Chrome Beta debug profile on `127.0.0.1:9222`.
+1. Use the Chrome plugin attached to the user's Chrome profile.
 2. Confirm the required wallet extension is installed in that profile.
 3. Start the local app servers and required backends.
 4. If a dependency is found to be missing during setup, classify the reason:
@@ -63,6 +63,8 @@ Before opening the journey:
    - wrong browser profile or session
    - missing backend
 5. Create or confirm Linear issues before material fixes begin.
+
+Do not run the portfolio browser journey through anything other than the Chrome plugin. Other checks can support setup or deterministic coverage, but they are not the browser acceptance lane.
 
 ## Fix-As-You-Test Rule
 

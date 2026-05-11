@@ -27,6 +27,14 @@ REQUIRED_SNIPPETS = {
         "raw PAN number",
         "`aadhar-solana` should remain a migration target and security-review candidate until the promotion gates above are complete.",
     ],
+    "docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md": [
+        "Trust display is informational. Protected actions must be enforced by server-side policy or an auditable control-plane decision.",
+        "Only `verified` can unlock high-trust writes by default.",
+        "If the trust service is unavailable, protected actions must fail closed.",
+        "Buyer agent commerce writes",
+        "Seller agent catalog/order writes",
+        "FlatWatch agent writes",
+    ],
     "docs/workflow/browser-testing-checklist.md": [
         "Use the Chrome plugin/browser client for browser-based testing.",
         "Do not satisfy browser validation with shell-only HTTP probes or any browser",
@@ -34,13 +42,18 @@ REQUIRED_SNIPPETS = {
     ],
     "docs/workflow/browser-testing-control-plane.md": [
         "Chrome plugin/browser client is the only browser-validation lane",
-        "Do not substitute another browser tool, another browser MCP, shell-only HTTP probes, or a fresh automation browser",
+        "Do not substitute anything else for Chrome-plugin browser-based testing.",
         "scripts/browser/check-cdp-endpoint.sh",
     ],
     "scripts/browser/check-cdp-endpoint.sh": [
         "does not expose DevTools JSON",
         "Use the Chrome plugin/system Chrome flow",
-        "Do not substitute a clean automation browser",
+        "Do not substitute another browser tool",
+    ],
+    "scripts/portfolio/verify-trust-matrix.py": [
+        "Browser-based portfolio validation must run through the Chrome plugin in Codex.",
+        "This shell-invoked script intentionally does not drive a browser by itself.",
+        "live trust matrix browser validation must use the Chrome plugin",
     ],
 }
 
@@ -49,12 +62,12 @@ FORBIDDEN_SNIPPETS = {
         "is the current portfolio trust producer",
         "downstream apps should call `aadhar-solana` directly",
     ],
+    "docs/reference/PORTFOLIO-TRUST-ACTION-POLICY.md": [
+        "Trust display is enforcement",
+        "frontend trust state is the enforcement boundary",
+    ],
     "scripts/browser/check-cdp-endpoint.sh": [
         "open -na",
-    ],
-    "docs/workflow/browser-testing-checklist.md": [
-        "chrome-devtools-mcp",
-        "mcp__chrome_devtools",
     ],
 }
 

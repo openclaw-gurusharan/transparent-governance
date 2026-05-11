@@ -14,17 +14,17 @@ Runs the portfolio acceptance gate in the workspace.
 
 Modes:
   --deterministic-only  Run health checks and deterministic checks only.
-  --browser-only        Run the live trust-state matrix only.
+  --browser-only        Run browser prerequisites and require Chrome-plugin matrix validation.
 
 Default:
-  Runs both deterministic checks and the live browser trust matrix.
+  Runs deterministic checks, then requires Chrome-plugin browser validation.
 EOF
 }
 
 print_browser_launch_hint() {
   cat >&2 <<'EOF'
-[hint] browser acceptance requires the Chrome plugin attached to the Chrome Beta debug profile.
-[hint] verify the required DevTools endpoint with:
+[hint] browser acceptance requires the Chrome plugin attached to the Chrome Beta profile.
+[hint] verify the expected Chrome profile setup with:
   scripts/browser/check-cdp-endpoint.sh
 EOF
 }
@@ -136,7 +136,7 @@ if [ "$RUN_DETERMINISTIC" -eq 1 ]; then
 fi
 
 if [ "$RUN_BROWSER" -eq 1 ]; then
-  run_step "live trust matrix" "$ROOT/scripts/portfolio/verify-trust-matrix.py"
+  run_step "Chrome-plugin live trust matrix requirement" "$ROOT/scripts/portfolio/verify-trust-matrix.py"
 fi
 
 echo
