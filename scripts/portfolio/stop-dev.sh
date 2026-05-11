@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-PID_DIR="$ROOT/.codex/portfolio-dev/pids"
+PID_DIR="$ROOT/artifacts/portfolio-dev/pids"
 
 stop_pid_file() {
   local pid_file="$1"

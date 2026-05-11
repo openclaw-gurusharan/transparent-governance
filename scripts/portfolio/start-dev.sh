@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-RUNTIME_DIR="$ROOT/.codex/portfolio-dev"
+RUNTIME_DIR="$ROOT/artifacts/portfolio-dev"
 LOG_DIR="$RUNTIME_DIR/logs"
 PID_DIR="$RUNTIME_DIR/pids"
 

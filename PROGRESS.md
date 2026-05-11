@@ -56,6 +56,7 @@ Observed local portfolio service targets:
 - `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /Users/gurusharan/.pyenv/versions/3.12.0/bin/python3 -m pytest tests/test_routes.py -q` passes in `aadhaar-chain/gateway` with 8 tests.
 - `python3 scripts/portfolio/check-auth-composition.py` passes.
 - `scripts/portfolio/acceptance-gate.sh --deterministic-only` passes end to end across AadhaarChain gateway, the trust contract check, buyer, seller, FlatWatch backend, and FlatWatch frontend.
+- `scripts/portfolio/start-dev.sh` starts the local stack when run with port-binding permission; while the startup shell is active, probes to `43100`, `43101`, `43102`, `43103`, `43104`, and `43105` return successfully.
 
 ## Key Findings
 
@@ -242,7 +243,7 @@ Proceed in this order:
 ### 8. Browser And Acceptance Gates
 
 - [x] Document local service targets and browser acceptance workflow.
-- [~] Confirm local services respond when started.
+- [x] Confirm local services respond when started.
 - [ ] Seed or recreate a local AadhaarChain trust fixture for the active wallet.
 - [ ] Run the same-wallet browser acceptance flow across AadhaarChain, buyer, seller, and FlatWatch.
 - [ ] Validate all trust states in browser-visible UX.
@@ -266,7 +267,7 @@ Proceed in this order:
 - PostgreSQL was not responding on `5432`.
 - Redis was not running on `6379`.
 - The local active wallet trust state needs reseeding or recreation before a full same-wallet browser acceptance run is meaningful.
-- Browser acceptance is currently blocked because local probes to `127.0.0.1:43101`, `43102`, `43103`, and Chrome debug endpoint `127.0.0.1:9222` failed.
+- Browser acceptance is currently blocked on the Chrome path only: local app services respond when started, but the Chrome listener on `127.0.0.1:9222` returns `404` for `/json/version`, and no callable Chrome plugin browser backend is exposed in this session.
 
 ## Next Checkpoint
 
